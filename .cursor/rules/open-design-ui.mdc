@@ -1,0 +1,34 @@
+---
+description: Use Open Design MCP for all UI creation and changes in this project
+alwaysApply: true
+---
+
+# Open Design MCP — UI source of truth
+
+For **any** UI/UX work in this repo (new screens, layout, styling, components, handbook/copilot presentation, copy-button UX, etc.), **start with Open Design MCP** (`user-open-design`). Do not guess UI from memory or screenshots alone.
+
+## Required workflow
+
+1. **Check OD** — Call `get_active_context` or `list_projects`. If no active project, use `project: "pluto2-main"` or the name the user gives (e.g. Result Page, handbook).
+2. **Pull design first** — Prefer `get_artifact()` for the full bundle (entry + tokens CSS + related files). Use `get_file` / `search_files` only when you need one known path.
+3. **Read tool schemas** — Inspect MCP tool descriptors under `mcps/user-open-design/tools/` before calling `CallMcpTool`.
+4. **Implement in repo** — Match OD typography, spacing, colors, and patterns in `templates/`, `static/css/`, `static/js/`.
+5. **New UI in OD** — For net-new layouts, use `create_artifact` in Open Design when appropriate, then implement from the generated files.
+
+## Scope
+
+| Use Open Design MCP | Skip OD (code-only) |
+|---------------------|---------------------|
+| HTML templates, CSS, front-end JS presentation | Python routes, DB, APIs, LLM prompts |
+| Handbook result workspace, copilot, dashboards | Tests, security, backend refactors |
+
+## If Open Design is unavailable
+
+Tell the user OD must be running locally. Offer to proceed with existing repo patterns only after they confirm, and re-sync with OD when it is back.
+
+## Default projects
+
+- App shell / Co-Pilot: `pluto2-main` (entry `index2.html`)
+- Handbook / result experiments: user-named OD projects (e.g. `Result Page -`, `handbook`)
+
+Active OD context expires ~5 minutes after last interaction; pass `project` explicitly when needed.

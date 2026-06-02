@@ -1,0 +1,675 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}HR Tools - Recruiter Copilot & Recruiter Handbook{% endblock %}
+
+{% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+{# Opening from Job History with ?job_id=... should land on MatchMaker (evaluate form), not Handbook #}
+{% set copilot_section = request.args.get('section')
+    or ('matchmaker' if request.args.get('job_id') else 'handbook') %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/copilot.css') }}?v={{ asset_v }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/handbook-intake.css') }}?v={{ asset_v }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/batch-comparison.css') }}?v={{ asset_v }}">
+
+<div class="copilot-page">
+    <div class="copilot-layout">
+        <!-- Module switcher (replaces ERP-style sidebar on this route) -->
+        <aside class="copilot-modules" aria-label="Module switcher">
+            <a href="{{ url_for('resume_evaluator') }}?section=handbook"
+               class="copilot-nav-card handbook-theme {% if copilot_section != 'matchmaker' %}active{% endif %}"
+               data-copilot-module="handbook">
+                <div class="card-bg"></div>
+                <div class="copilot-nav-card-inner">
+                    <i class="bi bi-book"></i>
+                    <h3>Recruiter Handbook</h3>
+                </div>
+            </a>
+            <a href="{{ url_for('resume_evaluator') }}?section=matchmaker"
+               class="copilot-nav-card matchmaker-theme {% if copilot_section == 'matchmaker' %}active{% endif %}"
+               data-copilot-module="matchmaker">
+                <div class="card-bg"></div>
+                <div class="copilot-nav-card-inner">
+                    <i class="bi bi-person-check"></i>
+                    <h3>MatchMaker</h3>
+                </div>
+            </a>
+            <a href="{{ url_for('history') }}" class="copilot-nav-card history-theme">
+                <div class="card-bg"></div>
+                <div class="copilot-nav-card-inner">
+                    <i class="bi bi-clock-history"></i>
+                    <h3>Job History</h3>
+                </div>
+            </a>
+            <nav class="copilot-quick-links" aria-label="More tools">
+                <a href="{{ url_for('index') }}">Hub</a> ·
+                <a href="{{ url_for('hr_assistant') }}">Info Buddy</a> ·
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            </nav>
+        </aside>
+
+        <div class="copilot-main main-content-area">
+            <div class="copilot-hero-row" id="copilot-hero">
+                <div class="copilot-context" aria-live="polite">
+                    <span id="copilot-context-text"></span><span class="caret" aria-hidden="true"></span>
+                </div>
+                <aside class="copilot-mascot" aria-label="PLUTO assistant">
+                    <img src="{{ url_for('static', filename='plbot.png') }}" alt="PLUTO">
+                </aside>
+            </div>
+            <div class="px-4 pb-4">
+                <div class="row justify-content-center">
+                    <div class="col-md-10 ref-inner-col">
+
+            <!-- Recruiter Handbook -->
+            <div id="handbook-section" class="copilot-module-panel"{% if copilot_section == 'matchmaker' %} style="display: none;"{% endif %}>
+                <div id="handbookContent">
+                    <div id="jd-quality-score-dock" class="jd-quality-dock mb-3" style="display: none;" role="region" aria-label="Job description quality score"></div>
+                    <div id="handbook-input-section">
+                        <div class="copilot-form-card copilot-form-card--intake mb-3">
+                            <h2 class="form-title-pl">
+                                <i class="bi bi-clipboard2-check" style="color: var(--c-blue);" aria-hidden="true"></i>
+                                Recruitment Intake &amp; Handbook
+                            </h2>
+                            {% include 'partials/handbook_intake_form.html' %}
+                            <datalist id="handbookJobIdSuggestions"></datalist>
+                        </div>
+                    </div>
+
+                    <div id="handbook-loading" class="text-center py-5" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <p class="mt-3 mb-1">Generating comprehensive recruiter playbook &amp; handbook…</p>
+                        <p class="loader-sub mb-0" id="handbook-loader-status">Analyzing job description…</p>
+                        <small class="text-muted">This may take 10–20 seconds</small>
+                        <div class="loader-progress mt-3 mx-auto" style="max-width:280px;" aria-hidden="true">
+                            <div id="handbook-loader-bar"></div>
+                        </div>
+                        <div class="loader-steps small text-muted" id="handbook-loader-steps" aria-label="Generation stages"></div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm mt-3" id="handbook-cancel-btn" style="display: none;">
+                            Cancel generation
+                        </button>
+                    </div>
+
+                    <section id="handbook-result-section" style="display: none;" aria-label="Generated handbook result">
+                        <div class="handbook-shell-card mb-3">
+                            <div class="handbook-header">
+                                <h1 class="h4 mb-0" id="handbook-result-page-title">Job Title : …</h1>
+                                <div class="actions-row d-flex flex-wrap gap-2">
+                                    <button type="button" id="downloadHandbookPDF" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-file-earmark-pdf me-1" aria-hidden="true"></i> Download PDF
+                                    </button>
+                                    <button type="button" id="resetHandbookForm" class="btn btn-outline-secondary btn-sm">
+                                        <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i> Generate New
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div id="handbook-cta-banner" role="region" aria-label="Handbook success">
+                                <p class="d-flex gap-3 align-items-start mb-0">
+                                    <i class="bi bi-check-circle-fill lead-icon" aria-hidden="true"></i>
+                                    <span>
+                                        <strong>Handbook generated successfully.</strong>
+                                        Ready to evaluate candidates against this job using MatchMaker.
+                                    </span>
+                                </p>
+                                <button type="button" id="evaluateCandidatesFromHandbook" class="btn btn-primary btn-lg">
+                                    Evaluate Candidates Now <span aria-hidden="true">→</span>
+                                </button>
+                            </div>
+
+                            <article id="handbook-content" class="recruiter-handbook-content"></article>
+                        </div>
+
+                        <div id="handbook-next-steps" class="mb-3">
+                            <h2 class="h5">Next Step: Evaluate Candidates</h2>
+                            <p class="text-secondary mb-3">
+                                Move this handbook into MatchMaker while context is fresh—note must-ask probes from Screening and Overqualification sections before you start.
+                            </p>
+                            <button type="button" id="evaluateCandidatesFromHandbookFooter" class="btn btn-primary btn-lg">
+                                Start Evaluating <span aria-hidden="true">→</span>
+                            </button>
+                        </div>
+
+                        <div id="handbook-feedback-section" aria-label="Handbook feedback">
+                            <h2 class="h5 mb-1">Rate This Handbook</h2>
+                            <p class="text-secondary mb-3">Private to your workspace—helps tune generation quality for your team.</p>
+                            <div id="handbook-feedback-already-submitted" class="d-none" role="status" aria-live="polite">
+                                <i class="bi bi-patch-check-fill me-2 text-success" aria-hidden="true"></i>
+                                Thank you! You&apos;ve already submitted feedback for this handbook.
+                            </div>
+                            <form id="handbookFeedbackForm" class="vstack gap-3" style="display: none;" novalidate>
+                                <input type="hidden" id="handbook-feedback-id" name="handbook_id">
+                                <input type="hidden" id="handbook-rating-value" name="rating" value="">
+                                <div>
+                                    <div class="form-label fw-semibold">Overall quality</div>
+                                    <div id="handbook-star-rating" class="handbook-star-rating" role="radiogroup" aria-label="Star rating 1 to 5">
+                                        <button type="button" class="star" data-value="1" aria-label="1 star" aria-pressed="false">
+                                            <i class="bi bi-star" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" class="star" data-value="2" aria-label="2 stars" aria-pressed="false">
+                                            <i class="bi bi-star" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" class="star" data-value="3" aria-label="3 stars" aria-pressed="false">
+                                            <i class="bi bi-star" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" class="star" data-value="4" aria-label="4 stars" aria-pressed="false">
+                                            <i class="bi bi-star" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" class="star" data-value="5" aria-label="5 stars" aria-pressed="false">
+                                            <i class="bi bi-star" aria-hidden="true"></i><i class="bi bi-star-fill" aria-hidden="true"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="handbook-feedback-comments" class="form-label fw-semibold">Comments (optional)</label>
+                                    <textarea id="handbook-feedback-comments" class="form-control" name="comments" rows="3" placeholder="What helped? What should we tighten next time?"></textarea>
+                                </div>
+                                <div class="d-flex flex-wrap gap-2 align-items-center">
+                                    <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                                    <span class="text-secondary small" id="rating-hint" aria-live="polite"></span>
+                                </div>
+                            </form>
+                        </div>
+                    </section>
+
+                    <div id="handbook-error" style="display: none;" class="alert alert-danger mt-3">
+                        <strong>Error:</strong> <span id="handbook-error-message">Failed to generate recruiter handbook. Please try again.</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MatchMaker -->
+            <div id="matchmaker-section" class="copilot-module-panel"{% if copilot_section != 'matchmaker' %} style="display: none;"{% endif %}>
+                <div id="matchmakerContent">
+                    <div id="matchmaker-input-wrap">
+                        <div class="copilot-form-card copilot-form-card--intake mb-3">
+                            <h2 class="form-title-pl">
+                                <i class="bi bi-person-check" style="color: var(--c-green);" aria-hidden="true"></i>
+                                MatchMaker Evaluation
+                            </h2>
+                            {% include 'partials/matchmaker_intake_form.html' %}
+                        </div>
+                    </div>
+
+                    <div id="evaluation-result" style="display: none;" class="mb-4 copilot-results">
+                        <div class="handbook-shell-card evaluation-shell-card mb-3">
+                            <div class="handbook-header">
+                                <h1 class="h4 mb-0">
+                                    <i class="bi bi-clipboard-data me-2" style="color: var(--c-green);" aria-hidden="true"></i>
+                                    Evaluation results
+                                </h1>
+                                <div class="actions-row d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="downloadEvaluationPDF">
+                                        <i class="bi bi-file-earmark-pdf me-1" aria-hidden="true"></i> Download PDF
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="evaluation-shell-body px-3 pb-4 pt-2">
+                                <div class="mm-command-center">
+                                    <span class="mm-chip"><strong>Workflow:</strong> Candidate evaluated</span>
+                                    <span class="mm-chip"><strong>Focus:</strong> Competency verification</span>
+                                    <span class="mm-chip"><strong>Interview readiness:</strong> <span id="mm-interview-readiness">Preparing</span></span>
+                                    <span class="mm-chip"><strong>PLUTO cue:</strong> <span id="mm-pluto-cue">Probe top gaps before panel round.</span></span>
+                                </div>
+                                <div class="row mm-grid">
+                                    <div class="col-md-4">
+                                        <div class="candidate-spotlight eval-section" data-eval-section="match-score">
+                                            <div class="eval-section-overlay" aria-hidden="true">
+                                                <div class="spinner-border text-primary" role="status"></div>
+                                                <span class="eval-section-label">Calculating match score…</span>
+                                            </div>
+                                            <div class="eval-section-content">
+                                            <div class="candidate-avatar" id="candidate-initials">AR</div>
+                                            <div class="candidate-name" id="candidate-name">Candidate</div>
+                                            <div class="candidate-role" id="candidate-role">Role under evaluation</div>
+                                            <div class="score-dial-wrap">
+                                                <div class="score-header">
+                                                    <div class="score-title">MatchMaker score</div>
+                                                    <button id="downloadCandidateResumeBtn" type="button" class="resume-download-btn" title="Download Resume" aria-label="Download Resume">
+                                                        <i class="bi bi-download"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="score-dial" id="match-score-ring" style="--score:0;">
+                                                    <div class="score-text" id="match-score">0%</div>
+                                                </div>
+                                                <div class="score-verdict" id="match-score-verdict">Pending evaluation</div>
+                                                <div class="score-subtext" id="match-score-subtext">Waiting for analysis</div>
+                                                <div id="progress-bar" class="visually-hidden" style="width:0%;" aria-hidden="true"></div>
+                                                <div class="eval-section eval-section--nested mt-2" data-eval-section="score-breakdown">
+                                                    <div class="eval-section-overlay" aria-hidden="true">
+                                                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                                        <span class="eval-section-label">Analyzing match dimensions…</span>
+                                                    </div>
+                                                    <div class="eval-section-content">
+                                                <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#candidateScoreBreakdown" aria-expanded="true" aria-controls="candidateScoreBreakdown">
+                                                    Score breakdown
+                                                </button>
+                                                <div class="collapse show mt-2 text-start" id="candidateScoreBreakdown">
+                                                    <div id="match-factors">
+                                                        <div class="mb-2">
+                                                            <label class="form-label mb-1">Skills match</label>
+                                                            <div class="progress" style="height: 8px;">
+                                                                <div id="skills-match" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                                                            </div>
+                                                            <small class="text-muted" id="skills-match-score">0%</small>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label mb-1">Experience match</label>
+                                                            <div class="progress" style="height: 8px;">
+                                                                <div id="experience-match" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                                                            </div>
+                                                            <small class="text-muted" id="experience-match-score">0%</small>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label mb-1">Education match</label>
+                                                            <div class="progress" style="height: 8px;">
+                                                                <div id="education-match" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                                                            </div>
+                                                            <small class="text-muted" id="education-match-score">0%</small>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label mb-1">Industry knowledge</label>
+                                                            <div class="progress" style="height: 8px;">
+                                                                <div id="industry-match" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                                                            </div>
+                                                            <small class="text-muted" id="industry-match-score">0%</small>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <label class="form-label mb-1">Certification match</label>
+                                                            <div class="progress" style="height: 8px;">
+                                                                <div id="certification-match" class="progress-bar" role="progressbar" style="width: 0%;"></div>
+                                                            </div>
+                                                            <small class="text-muted" id="certification-match-score">0%</small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="contact-mini">
+                                                <strong>Contact info</strong>
+                                                <div>📄 <span id="candidate-file">Not set</span></div>
+                                                <div>✉️ <span id="candidate-email">Not available</span></div>
+                                                <div>📱 <span id="candidate-phone">Not available</span></div>
+                                                <div>🔗 <a id="candidate-linkedin" href="#" target="_blank" rel="noopener noreferrer">Not available</a></div>
+                                            </div>
+                                            </div>
+                                        </div>
+
+                                        <details class="copilot-results-details eval-section" data-eval-section="stability" open>
+                                            <summary>Stability &amp; qualification signals</summary>
+                                            <div class="eval-section-overlay" aria-hidden="true">
+                                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                                <span class="eval-section-label">Analyzing stability &amp; career signals…</span>
+                                            </div>
+                                            <div class="eval-section-content">
+                                            <div class="card mb-3">
+                                                <div class="card-header"><h4 class="mb-0">Job stability</h4></div>
+                                                <div class="card-body">
+                                                    <div class="d-flex align-items-center mb-2">
+                                                        <span class="me-2">Stability score:</span>
+                                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                                            <div id="stability-score-bar" class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                                        </div>
+                                                        <span class="ms-2" id="stability-score">0</span>
+                                                    </div>
+                                                    <p><strong>Risk level: </strong><span id="risk-level" class="badge">Unknown</span></p>
+                                                    <p><strong>Average tenure: </strong><span id="average-tenure">Unknown</span></p>
+                                                    <p><strong>Job count: </strong><span id="job-count">0</span></p>
+                                                    <div id="stability-explanation" class="alert alert-light mt-2">No stability data available</div>
+                                                </div>
+                                            </div>
+                                            <div class="card mb-3" id="red-flags-card" style="display: none;">
+                                                <div class="card-header bg-warning bg-opacity-25"><h4 class="mb-0">Red flags &amp; concerns</h4></div>
+                                                <div class="card-body"><div id="red-flags" class="alert alert-warning"></div></div>
+                                            </div>
+                                            <div class="card mb-0" id="qualification-fit-card" style="display: none;">
+                                                <div class="card-header bg-info bg-opacity-25"><h4 class="mb-0">Qualification fit</h4></div>
+                                                <div class="card-body"><div id="overqualification-analysis" class="p-3 border rounded bg-info bg-opacity-10"></div></div>
+                                            </div>
+                                            </div>
+                                        </details>
+                                    </div>
+
+                                    <div class="col-md-8">
+                                        <div class="card mb-3 eval-section" data-eval-section="profile-summary">
+                                            <div class="eval-section-overlay" aria-hidden="true">
+                                                <div class="spinner-border text-primary" role="status"></div>
+                                                <span class="eval-section-label">Building profile summary…</span>
+                                            </div>
+                                            <div class="card-header"><h4 class="mb-0">Profile summary</h4></div>
+                                            <div class="card-body eval-section-content">
+                                                <p id="profile-summary" class="border p-3 rounded bg-light"></p>
+                                                <h5 class="mt-4">Missing keywords</h5>
+                                                <div id="missing-keywords" class="p-3 border rounded bg-light d-flex flex-wrap gap-2"></div>
+
+                                                <details class="copilot-results-details eval-section eval-section--inset" data-eval-section="fit-analysis" open>
+                                                    <summary>Full recruiter analysis (tables &amp; narrative)</summary>
+                                                    <div class="eval-section-overlay" aria-hidden="true">
+                                                        <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                                        <span class="eval-section-label">Running recruiter fit analysis…</span>
+                                                    </div>
+                                                    <div class="eval-section-content">
+                                                    <div id="candidate-fit-analysis" class="mt-3">
+                                                        <h6 class="mt-3">Dimension evaluation</h6>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered table-hover" id="fit-dimensions-table">
+                                                                <thead class="table-primary">
+                                                                    <tr>
+                                                                        <th style="width: 25%">Dimension</th>
+                                                                        <th style="width: 15%">Evaluation</th>
+                                                                        <th style="width: 60%">Recruiter comments</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="fit-dimensions-body"></tbody>
+                                                            </table>
+                                                        </div>
+                                                        <h6 class="mt-4">Risk &amp; gaps to probe</h6>
+                                                        <div id="fit-risks-container">
+                                                            <div class="table-responsive">
+                                                                <table class="table table-bordered table-hover" id="fit-risks-table">
+                                                                    <thead class="table-warning">
+                                                                        <tr>
+                                                                            <th style="width: 25%">Area</th>
+                                                                            <th style="width: 35%">Risk</th>
+                                                                            <th style="width: 40%">Recruiter strategy</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="fit-risks-body"></tbody>
+                                                                </table>
+                                                            </div>
+                                                        </div>
+                                                        <h6 class="mt-4">Recommendation</h6>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-bordered" id="fit-recommendation-table">
+                                                                <thead class="table-success">
+                                                                    <tr>
+                                                                        <th style="width: 25%">Verdict</th>
+                                                                        <th style="width: 15%">Fit level</th>
+                                                                        <th style="width: 60%">Rationale</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="fit-recommendation-body"></tbody>
+                                                            </table>
+                                                        </div>
+                                                        <h6 class="mt-4">Recruiter narrative</h6>
+                                                        <div id="recruiter-narrative" class="p-3 border rounded bg-light" style="background: linear-gradient(135deg, color-mix(in srgb, var(--pl-primary) 12%, var(--pl-white)) 0%, color-mix(in srgb, var(--pl-yellow) 18%, var(--pl-white)) 100%) !important;"></div>
+                                                    </div>
+                                                    </div>
+                                                </details>
+                                            </div>
+                                        </div>
+
+                                        <details class="copilot-results-details eval-section" data-eval-section="questions" open>
+                                            <summary>Interview question bank</summary>
+                                            <div class="eval-section-overlay" aria-hidden="true">
+                                                <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                                                <span class="eval-section-label">Generating interview questions…</span>
+                                            </div>
+                                            <div class="eval-section-content">
+                                            <div class="card">
+                                                <div class="card-header"><h4 class="mb-0">Essential candidate questions</h4></div>
+                                                <div class="card-body">
+                                                    <ul class="nav nav-tabs" id="questionsTab" role="tablist">
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link active" id="quick-checks-tab" data-bs-toggle="tab" data-bs-target="#quick-checks" type="button" role="tab" aria-controls="quick-checks" aria-selected="true">Quick checks</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="soft-skills-tab" data-bs-toggle="tab" data-bs-target="#soft-skills" type="button" role="tab" aria-controls="soft-skills" aria-selected="false">Soft skills</button>
+                                                        </li>
+                                                        <li class="nav-item" role="presentation">
+                                                            <button class="nav-link" id="technical-skills-tab" data-bs-toggle="tab" data-bs-target="#technical-skills" type="button" role="tab" aria-controls="technical-skills" aria-selected="false">Skill checks</button>
+                                                        </li>
+                                                    </ul>
+                                                    <div class="tab-content mt-3" id="questionsTabContent">
+                                                        <div class="tab-pane fade show active" id="quick-checks" role="tabpanel" aria-labelledby="quick-checks-tab">
+                                                            <ul id="quick-checks-questions" class="list-group"></ul>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="soft-skills" role="tabpanel" aria-labelledby="soft-skills-tab">
+                                                            <ul id="soft-skills-questions" class="list-group"></ul>
+                                                        </div>
+                                                        <div class="tab-pane fade" id="technical-skills" role="tabpanel" aria-labelledby="technical-skills-tab">
+                                                            <ul id="technical-skills-questions" class="list-group"></ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                        </details>
+
+                                        <div class="card mt-3 eval-section" data-eval-section="feedback">
+                                            <div class="eval-section-overlay" aria-hidden="true">
+                                                <div class="spinner-border spinner-border-sm text-secondary" role="status"></div>
+                                                <span class="eval-section-label">Finalizing evaluation…</span>
+                                            </div>
+                                            <div class="card-header"><h4 class="mb-0">Provide feedback</h4></div>
+                                            <div class="card-body eval-section-content">
+                                                <form id="feedbackForm">
+                                                    <input type="hidden" id="evaluation-id" name="evaluation_id">
+                                                    <div class="mb-3">
+                                                        <label for="rating" class="form-label">Rating (1-5)</label>
+                                                        <div class="star-rating" id="star-rating">
+                                                            <span class="star" data-value="1">★</span>
+                                                            <span class="star" data-value="2">★</span>
+                                                            <span class="star" data-value="3">★</span>
+                                                            <span class="star" data-value="4">★</span>
+                                                            <span class="star" data-value="5">★</span>
+                                                        </div>
+                                                        <input type="hidden" id="rating" name="rating" value="0">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                        <label for="comments" class="form-label">Comments</label>
+                                                        <textarea class="form-control" id="comments" name="comments" rows="3" placeholder="Your feedback..."></textarea>
+                                                    </div>
+                                                    <button type="submit" class="btn btn-primary">Submit feedback</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="batch-results" style="display: none;" class="mb-4 copilot-results">
+                        <div class="handbook-shell-card batch-comparison-shell mb-3">
+                            <div class="handbook-header">
+                                <h1 class="h4 mb-0">
+                                    <i class="bi bi-people me-2" style="color: var(--c-green);" aria-hidden="true"></i>
+                                    Candidate comparison
+                                </h1>
+                                <div class="actions-row d-flex flex-wrap gap-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="batch-new-comparison">
+                                        <i class="bi bi-arrow-counterclockwise me-1" aria-hidden="true"></i> Compare again
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="evaluation-shell-body px-3 pb-4">
+                                <p class="batch-comparison-meta text-secondary mb-3" id="batch-comparison-meta"></p>
+                                <div id="batch-leaderboard" class="batch-leaderboard" role="list" aria-label="Ranked candidates"></div>
+                                <div id="batch-matrix-wrap" class="batch-matrix-wrap mb-4"></div>
+                                <div id="batch-candidate-details" class="batch-candidate-details"></div>
+                                <details class="batch-report-details mt-3">
+                                    <summary class="batch-report-summary">
+                                        <i class="bi bi-file-text me-2" aria-hidden="true"></i> Full written report
+                                    </summary>
+                                    <article id="batch-report-markdown" class="recruiter-handbook-content batch-report-markdown mt-3"></article>
+                                </details>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Custom Resume Evaluator Script (marked/DOMPurify/pluto-api loaded in base.html) -->
+<script src="{{ url_for('static', filename='js/handbook-intake-form.js') }}?v={{ asset_v }}" defer></script>
+<script src="{{ url_for('static', filename='js/handbook-stream.js') }}?v={{ asset_v }}" defer></script>
+<script src="{{ url_for('static', filename='js/eval-stream.js') }}?v={{ asset_v }}" defer></script>
+<script src="{{ url_for('static', filename='js/resume-evaluator.js') }}?v={{ asset_v }}" defer></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pluto-handbook-result.css') }}?v={{ asset_v }}">
+<script src="{{ url_for('static', filename='js/pluto-handbook-result.js') }}?v={{ asset_v }}" defer></script>
+<script>
+window.COPILOT_CONTEXT_MESSAGES = {
+    handbook: "Ready to build a comprehensive Recruiter Handbook! Just provide the Job Description, and I'll extract the key technical requirements and interview strategies.",
+    matchmaker: "Ready for MatchMaker — upload a resume, paste the job description, and I'll score fit with stability, progression, and interview questions."
+};
+
+window.setCopilotHeroVisible = function (visible) {
+    var show = visible !== false;
+    document.querySelectorAll('.copilot-context, .copilot-mascot').forEach(function (el) {
+        el.style.display = show ? '' : 'none';
+    });
+};
+
+window.syncCopilotHeroForHandbook = function () {
+    var section = 'handbook';
+    try {
+        section = new URLSearchParams(window.location.search).get('section') || 'handbook';
+    } catch (e) { /* noop */ }
+    if (section !== 'handbook') {
+        window.setCopilotHeroVisible(true);
+        return;
+    }
+    var loading = document.getElementById('handbook-loading');
+    var result = document.getElementById('handbook-result-section');
+    var busy = (loading && loading.style.display !== 'none') ||
+        (result && result.style.display !== 'none');
+    window.setCopilotHeroVisible(!busy);
+};
+
+window.updateCopilotBubble = function (section) {
+    var el = document.getElementById('copilot-context-text');
+    if (!el || !window.COPILOT_CONTEXT_MESSAGES) return;
+    var text = window.COPILOT_CONTEXT_MESSAGES[section] || window.COPILOT_CONTEXT_MESSAGES.handbook;
+    el.textContent = '';
+    var i = 0;
+    function type() {
+        if (i < text.length) {
+            el.textContent += text.charAt(i);
+            i++;
+            setTimeout(type, 22);
+        }
+    }
+    type();
+};
+
+window.updateCopilotInsights = function (section, chips) {
+    var panel = document.getElementById('pluto-insights-panel');
+    if (panel) panel.style.display = section === 'handbook' ? '' : 'none';
+
+    var i1 = document.getElementById('plutoInsight1');
+    var i2 = document.getElementById('plutoInsight2');
+    var chipWrap = document.getElementById('plutoInsightChips');
+    if (i1) i1.textContent = section === 'matchmaker'
+        ? "Tip: upload 2–5 resumes to quickly compare match signals."
+        : "Tip: paste a full JD to unlock stronger sourcing parameters.";
+    if (i2) i2.textContent = section === 'matchmaker'
+        ? "I’ll surface gaps, red flags, and interview questions in one pass."
+        : "I’ll highlight red flags, target pools, and screening prompts.";
+
+    if (chipWrap) chipWrap.innerHTML = '';
+};
+
+window.HANDBOOK_LOADER_STEPS = [
+    "Processing intake snapshot…",
+    "Mapping role logistics & work model…",
+    "Building comp, notice & eligibility guardrails…",
+    "Drafting job summary & sourcing parameters…",
+    "Creating screening framework…",
+    "Aligning interview & assessment plan…",
+    "Identifying talent pools & Boolean samples…",
+    "Applying sourcing mandate & channels…",
+    "Flagging risks & pre-call checklist…",
+    "Crafting recruiter pitch…",
+    "Finalizing timeline & priority playbook…"
+];
+
+window.startHandbookLoader = function () {
+    var steps = window.HANDBOOK_LOADER_STEPS;
+    var stepWrap = document.getElementById('handbook-loader-steps');
+    var status = document.getElementById('handbook-loader-status');
+    var bar = document.getElementById('handbook-loader-bar');
+    if (!stepWrap || !status || !bar) return;
+
+    window.stopHandbookLoader();
+    stepWrap.innerHTML = '';
+    steps.forEach(function (t, idx) {
+        var row = document.createElement('div');
+        row.className = 'loader-step' + (idx === 0 ? ' active' : '');
+        row.setAttribute('data-step-idx', String(idx));
+        row.innerHTML = '<span class="loader-dot" aria-hidden="true"></span><span>' + t + '</span>';
+        stepWrap.appendChild(row);
+    });
+
+    window.__handbookLoaderStep = 0;
+    status.textContent = steps[0];
+    bar.style.width = '8%';
+    if (window.updateCopilotInsights) {
+        window.updateCopilotInsights('handbook', []);
+    }
+};
+
+window.advanceHandbookLoaderFromMarkdown = function (markdown) {
+    var steps = window.HANDBOOK_LOADER_STEPS;
+    var stepWrap = document.getElementById('handbook-loader-steps');
+    var status = document.getElementById('handbook-loader-status');
+    var bar = document.getElementById('handbook-loader-bar');
+    if (!stepWrap || !status || !bar || !markdown) return;
+
+    var idx = -1;
+    var text = markdown;
+    if (/\*\*13\.|Hiring Timeline|Priority Playbook/i.test(text)) idx = 10;
+    else if (/\*\*12\.|Overqualification|Flight Risk/i.test(text)) idx = 9;
+    else if (/\*\*11\.|Sales Pitch|Why this role/i.test(text)) idx = 8;
+    else if (/\*\*10\.|Recruiter Checklist|Pre-call/i.test(text)) idx = 7;
+    else if (/\*\*9\.|Red Flags/i.test(text)) idx = 6;
+    else if (/\*\*8\.|Sourcing Mandate|Channel Strategy/i.test(text)) idx = 5;
+    else if (/\*\*7\.|Target Talent|Boolean/i.test(text)) idx = 4;
+    else if (/\*\*6\.|Interview & Assessment|Assessment Plan/i.test(text)) idx = 3;
+    else if (/\*\*5\.|Screening Framework/i.test(text)) idx = 2;
+    else if (/\*\*4\.|Primary Sourcing|Sourcing Parameters/i.test(text)) idx = 1;
+    else if (/\*\*0\.|Intake Snapshot|\*\*1\.|Role Logistics|\*\*2\.|Compensation|\*\*3\.|Job Summary/i.test(text)) idx = 0;
+
+    if (idx < 0) return;
+    window.__handbookLoaderStep = Math.max(window.__handbookLoaderStep || 0, idx);
+    status.textContent = steps[window.__handbookLoaderStep];
+    var pct = Math.round(((window.__handbookLoaderStep + 1) / steps.length) * 92);
+    bar.style.width = pct + '%';
+    Array.from(stepWrap.querySelectorAll('.loader-step')).forEach(function (el) {
+        var n = parseInt(el.getAttribute('data-step-idx') || '0', 10);
+        el.classList.toggle('active', n === window.__handbookLoaderStep);
+        el.classList.toggle('done', n < window.__handbookLoaderStep);
+    });
+};
+
+window.stopHandbookLoader = function () {
+    if (window.__handbookLoaderTimer) {
+        clearInterval(window.__handbookLoaderTimer);
+        window.__handbookLoaderTimer = null;
+    }
+    var bar = document.getElementById('handbook-loader-bar');
+    if (bar) bar.style.width = '100%';
+    var steps = window.HANDBOOK_LOADER_STEPS || [];
+    var status = document.getElementById('handbook-loader-status');
+    if (status && steps.length) {
+        status.textContent = steps[steps.length - 1];
+    }
+};
+
+{# Copilot section + ?job_id= prefill: resume-evaluator.js (after activateCopilotSection exists) #}
+</script>
+{% endblock %}

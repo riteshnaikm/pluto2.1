@@ -1,0 +1,109 @@
+/**
+ * PeopleLogic / PLUTO — mandatory brand palette (4 colours + neutrals).
+ * Load immediately after Bootstrap CSS.
+ */
+:root {
+  /* Brand palette */
+  --pl-primary: #0d6fae;
+  --pl-primary-dark: #0a5a8e;
+  --pl-primary-light: #e8f4fc;
+
+  --pl-orange: #e26014;
+  --pl-orange-dark: #c04f0f;
+  --pl-orange-light: #fdf0e8;
+
+  --pl-olive: #7d8e2c;
+  --pl-olive-dark: #647220;
+  --pl-olive-light: #f2f5e8;
+
+  --pl-yellow: #f6c206;
+  --pl-yellow-dark: #d4a605;
+  --pl-yellow-light: #fef9e6;
+
+  /* Neutrals (backgrounds & text only) */
+  --pl-white: #ffffff;
+  --pl-surface: #f8f9fa;
+  --pl-border: #dee2e6;
+  --pl-text-primary: #1a1a2e;
+  --pl-text-secondary: #6b7280;
+  --pl-placeholder: color-mix(in srgb, var(--pl-text-secondary) 42%, transparent);
+
+  /* Semantic aliases */
+  --pl-success: var(--pl-olive);
+  --pl-warning: var(--pl-yellow);
+  --pl-danger: var(--pl-orange);
+  --pl-info: var(--pl-primary);
+
+  /* Legacy aliases used across templates / copilot */
+  --primary-blue: var(--pl-primary);
+  --primary-green: var(--pl-olive);
+  --primary-yellow: var(--pl-yellow);
+  --primary-orange: var(--pl-orange);
+  --c-blue: var(--pl-primary);
+  --c-green: var(--pl-olive);
+  --c-yellow: var(--pl-yellow);
+  --c-orange: var(--pl-orange);
+  --surface-bg: var(--pl-white);
+  --text-primary: var(--pl-text-primary);
+  --text-muted: var(--pl-text-secondary);
+  --border-soft: color-mix(in srgb, var(--pl-primary) 15%, transparent);
+  --blue-light: var(--pl-primary-light);
+  --green-light: var(--pl-olive-light);
+  --orange-light: var(--pl-orange-light);
+  --yellow-light: var(--pl-yellow-light);
+
+  /* Bootstrap 5 CSS variable remap */
+  --bs-primary: var(--pl-primary);
+  --bs-success: var(--pl-olive);
+  --bs-warning: var(--pl-yellow);
+  --bs-danger: var(--pl-orange);
+  --bs-info: var(--pl-primary);
+  --bs-body-color: var(--pl-text-primary);
+  --bs-body-bg: var(--pl-surface);
+  --bs-link-color: var(--pl-primary);
+  --bs-link-hover-color: var(--pl-primary-dark);
+}
+
+[data-theme="dark"] {
+  --pl-surface: #1a1a2e;
+  --pl-border: #2d3748;
+  --pl-text-primary: #f0f4f8;
+  --pl-text-secondary: #a0aec0;
+  --pl-placeholder: color-mix(in srgb, var(--pl-text-secondary) 55%, transparent);
+  --pl-primary-light: #0d2a3d;
+  --pl-orange-light: #2d1a0d;
+  --pl-olive-light: #1a2010;
+  --pl-yellow-light: #2d2600;
+  --surface-bg: #1a1a2e;
+  --text-primary: var(--pl-text-primary);
+  --text-muted: var(--pl-text-secondary);
+  --border-soft: color-mix(in srgb, var(--pl-text-secondary) 25%, transparent);
+  --blue-light: var(--pl-primary-light);
+  --cp-bg: var(--pl-surface);
+  --cp-surface: #23233a;
+  --cp-fg: var(--pl-text-primary);
+  --cp-muted: var(--pl-text-secondary);
+  --cp-border: var(--pl-border);
+}
+
+/* Subtle placeholder hint text — all forms (Bootstrap + PL design system) */
+input::placeholder,
+textarea::placeholder,
+.form-control::placeholder,
+.pl-input::placeholder,
+.pl-textarea::placeholder {
+  color: var(--pl-placeholder);
+  opacity: 1;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder,
+.form-control::-webkit-input-placeholder {
+  color: var(--pl-placeholder);
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+  color: var(--pl-placeholder);
+  opacity: 1;
+}

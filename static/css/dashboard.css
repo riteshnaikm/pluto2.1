@@ -1,0 +1,134 @@
+﻿.hover-lift {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .hover-lift:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+    }
+    .trend-up {
+        color: var(--pl-olive) !important;
+    }
+    .trend-down {
+        color: var(--pl-orange) !important;
+    }
+    .trend-neutral {
+        color: var(--pl-text-secondary) !important;
+    }
+    .card {
+        border: none;
+        border-radius: 0.5rem;
+    }
+    .shadow-sm {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
+    }
+    
+    /* Loading Skeletons */
+    .skeleton-text, .skeleton-chart {
+        background: linear-gradient(90deg, var(--pl-surface) 25%, var(--pl-border) 50%, var(--pl-surface) 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s ease-in-out infinite;
+        border-radius: 4px;
+    }
+    
+    @keyframes loading {
+        0% {
+            background-position: 200% 0;
+        }
+        100% {
+            background-position: -200% 0;
+        }
+    }
+    
+    /* Responsive improvements */
+    @media (max-width: 768px) {
+        .card-body {
+            padding: 1rem;
+        }
+        .btn-group {
+            flex-direction: column;
+        }
+        .btn-group .btn {
+            border-radius: 0.25rem !important;
+            margin-bottom: 0.25rem;
+        }
+    }
+    
+    /* Auto-refresh indicator */
+    .auto-refresh-active {
+        animation: spin 2s linear infinite;
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+    
+    /* Filter card improvements */
+    .form-label {
+        font-weight: 500;
+        font-size: 0.875rem;
+    }
+    
+    /* Accessibility improvements */
+    .btn:focus, .form-select:focus, .form-control:focus {
+        outline: 2px solid var(--pl-primary);
+        outline-offset: 2px;
+    }
+    
+    /* Smooth transitions */
+    .card {
+        transition: all 0.3s ease;
+    }
+    
+    /* Loading state improvements */
+    #dashboard-loading {
+        animation: fadeIn 0.3s ease-in;
+    }
+    
+    #dashboard-content {
+        animation: fadeIn 0.5s ease-in;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    /* Error state styling */
+    .alert-danger {
+        border-left: 4px solid var(--pl-orange);
+    }
+    
+    /* Table improvements */
+    .table-hover tbody tr {
+        transition: background-color 0.2s ease;
+    }
+    
+    /* Chart container improvements */
+    canvas {
+        max-width: 100%;
+        height: auto !important;
+    }
+
+[data-theme="dark"] .card,
+[data-theme="dark"] .card-body {
+    background-color: var(--surface-bg);
+    color: var(--text-primary);
+    border-color: var(--border-soft);
+}
+
+[data-theme="dark"] .card-header {
+    background-color: var(--primary-blue);
+    color: #fff;
+}
+
+[data-theme="dark"] .skeleton-text,
+[data-theme="dark"] .skeleton-chart {
+    background: linear-gradient(90deg, var(--pl-text-primary) 25%, color-mix(in srgb, var(--pl-text-primary) 85%, var(--pl-white)) 50%, var(--pl-text-primary) 75%);
+    background-size: 200% 100%;
+}
+
+[data-theme="dark"] .table {
+    --bs-table-bg: var(--surface-bg);
+    --bs-table-color: var(--text-primary);
+}

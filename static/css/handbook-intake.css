@@ -1,0 +1,159 @@
+/* Recruitment intake long form (handbook section) */
+.handbook-intake-form {
+    max-width: 100%;
+}
+
+.handbook-intake-intro {
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.intake-section {
+    border: 1px solid var(--cp-border, rgba(13, 111, 174, 0.15));
+    border-radius: 12px;
+    padding: 1.25rem 1.25rem 0.5rem;
+    margin-bottom: 1.25rem;
+    background: var(--cp-surface, #fff);
+}
+
+[data-theme="dark"] .intake-section {
+    background: var(--surface-bg, var(--pl-text-primary));
+    border-color: var(--border-soft, rgba(169, 187, 203, 0.25));
+}
+
+.intake-section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--cp-fg, var(--text-primary, var(--pl-text-primary)));
+    float: none;
+    width: 100%;
+}
+
+.intake-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 6px;
+    background: var(--primary-blue, #0d6fae);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+}
+
+.intake-check-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem 1.25rem;
+}
+
+.intake-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    margin: 0;
+}
+
+.intake-check input {
+    accent-color: var(--primary-blue, #0d6fae);
+}
+
+.intake-skills-table input {
+    font-size: 0.875rem;
+}
+
+.intake-skills-table .btn-remove-skill {
+    padding: 0.15rem 0.45rem;
+    line-height: 1;
+}
+
+.copilot-form-card--intake {
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.copilot-page #matchmaker-input-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.intake-num--olive {
+    background: var(--pl-olive, #7d8e2c);
+}
+
+/* MatchMaker file drop zone */
+.matchmaker-file-zone {
+    position: relative;
+    border: 2px dashed color-mix(in srgb, var(--pl-olive) 35%, var(--pl-border));
+    border-radius: 12px;
+    padding: 1.35rem 1rem;
+    text-align: center;
+    background: color-mix(in srgb, var(--pl-olive) 6%, var(--cp-surface, #fff));
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.matchmaker-file-zone:hover,
+.matchmaker-file-zone.is-dragover {
+    border-color: var(--pl-olive);
+    background: var(--pl-olive-light, #f2f5e8);
+}
+
+.matchmaker-file-icon {
+    font-size: 1.75rem;
+    color: var(--pl-olive);
+    display: block;
+    margin-bottom: 0.35rem;
+}
+
+.matchmaker-file-title {
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: var(--cp-fg, var(--pl-text-primary));
+}
+
+.matchmaker-file-meta {
+    font-size: 0.78rem;
+    color: var(--cp-muted, var(--pl-text-secondary));
+}
+
+.matchmaker-file-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.matchmaker-file-selected:not(:empty) {
+    font-weight: 600;
+    color: var(--pl-primary);
+}
+
+.copilot-page .evaluation-shell-card .evaluation-shell-body {
+    width: 100%;
+}
+
+.copilot-page .evaluation-shell-card .handbook-header h1 {
+    display: flex;
+    align-items: center;
+}
+
+
+@media (max-width: 768px) {
+    .intake-check-row {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

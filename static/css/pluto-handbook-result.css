@@ -1,0 +1,884 @@
+/* PLUTO Recruiter Handbook result workspace (Open Design) */
+.copilot-page #handbook-result-section {
+  --primary-blue: var(--c-blue, #0d6fae);
+  --support-green: #7d8e2c;
+  --accent-yellow: #f6c206;
+  --accent-orange: #e26014;
+  --ink-950: var(--pl-text-primary);
+  --ink-700: var(--pl-text-secondary);
+  --ink-500: var(--pl-text-secondary);
+  --surface-0: var(--pl-surface);
+  --surface-1: var(--pl-white);
+  --hairline: var(--pl-border);
+  --focus-ring: 0 0 0 3px rgba(13, 111, 174, 0.35);
+  --radius-card: 14px;
+  --radius-pill: 999px;
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --max-read: 100%;
+  --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", Menlo, Consolas, monospace;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+}
+
+:root {
+      /* PeopleLogic mapped tokens → pair with Bootstrap 5 where useful */
+      --primary-blue: #0d6fae;
+      --support-green: #7d8e2c;
+      --accent-yellow: #f6c206;
+      --accent-orange: #e26014;
+      --ink-950: var(--pl-text-primary);
+      --ink-700: var(--pl-text-secondary);
+      --ink-500: var(--pl-text-secondary);
+      --surface-0: var(--pl-surface);
+      --surface-1: var(--pl-white);
+      --hairline: var(--pl-border);
+      --focus-ring: 0 0 0 3px rgba(13, 111, 174, 0.35);
+
+      --radius-card: 14px;
+      --radius-pill: 999px;
+      --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+
+      --space-section: clamp(1.25rem, 2vw, 2rem);
+      --max-read: min(72ch, 920px);
+
+      --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --font-mono: ui-monospace, "Cascadia Code", "Segoe UI Mono", Menlo, Consolas, monospace;
+
+      --bs-primary: var(--primary-blue);
+      --bs-success: var(--support-green);
+      --bs-body-font-family: var(--font-sans);
+      --bs-body-font-size: 1rem;
+      --bs-body-line-height: 1.58;
+      --bs-border-color: var(--hairline);
+    }
+
+      margin: 0;
+      font-family: var(--font-sans);
+      background: var(--surface-0);
+      color: var(--ink-950);
+      -webkit-font-smoothing: antialiased;
+    }
+
+      color: var(--primary-blue);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      transition: color 0.18s ease, opacity 0.18s ease;
+    }
+
+      position: sticky;
+      top: 0;
+      z-index: 1040;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(10px);
+      border-block-end: 1px solid var(--hairline);
+    }
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      font-size: 1.0625rem;
+      color: var(--ink-950);
+      text-decoration: none;
+    }
+
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: calc(100vh - 56px);
+    }
+
+      background: linear-gradient(180deg, var(--pl-primary-dark) 0%, color-mix(in srgb, var(--pl-primary-dark) 75%, var(--pl-text-primary)) 100%);
+      color: var(--pl-primary-light);
+      padding: 1.25rem 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.06);
+    }
+
+      border-radius: var(--radius-card);
+      padding: 0.75rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+      cursor: default;
+    }
+      font-size: 1.65rem;
+    }
+      background: rgba(13, 111, 174, 0.35);
+      border-color: rgba(13, 111, 174, 0.55);
+    }
+      background: rgba(125, 142, 44, 0.22);
+      border-color: rgba(125, 142, 44, 0.45);
+    }
+
+      margin-top: auto;
+      font-size: 0.8125rem;
+      text-align: center;
+      opacity: 0.9;
+      line-height: 1.6;
+    }
+      color: var(--pl-primary-light);
+      text-decoration: none;
+    }
+      color: #fff;
+      text-decoration: underline;
+    }
+
+      padding: clamp(1rem, 2.5vw, 2rem);
+    }
+
+    .copilot-page #handbook-result-section {
+      width: 100%;
+      max-width: 100%;
+      margin-inline: 0;
+    }
+
+    .handbook-shell-card {
+      background: var(--surface-1);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--hairline);
+      box-shadow: var(--shadow-md);
+      overflow: visible;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease;
+    }
+
+    .handbook-shell-card:hover {
+      border-color: var(--pl-border);
+      box-shadow: 0 10px 32px rgba(15, 23, 42, 0.1);
+    }
+
+    .handbook-header {
+      padding: clamp(1.25rem, 2vw, 1.75rem);
+      border-block-end: 1px solid var(--hairline);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .handbook-header h1,
+    #handbook-result-page-title {
+      font-size: clamp(1.35rem, 2.2vw, 1.625rem);
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      margin: 0;
+      max-width: min(100%, 48ch);
+      line-height: 1.25;
+      color: var(--ink-950);
+    }
+
+    .hb-title-row--toc-only {
+      margin-block-start: clamp(0.75rem, 1.5vw, 1.25rem);
+      padding-block-start: 0;
+    }
+    .hb-title-row--toc-only .hb-toc-mini {
+      margin-block-start: 0;
+    }
+
+    #handbook-cta-banner {
+      margin: clamp(1rem, 2vw, 1.5rem);
+      padding: clamp(1rem, 2vw, 1.35rem);
+      border-radius: 12px;
+      border: 1px solid color-mix(in srgb, var(--support-green) 35%, transparent);
+      background: color-mix(in srgb, var(--support-green) 14%, white);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 1rem;
+      justify-content: space-between;
+    }
+    #handbook-cta-banner p {
+      margin: 0;
+      font-weight: 500;
+      color: var(--ink-950);
+      max-width: min(62ch, 100%);
+      font-size: 0.9825rem;
+    }
+    #handbook-cta-banner .lead-icon {
+      color: var(--support-green);
+      font-size: 1.35rem;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    /* --
+       Dev notes — markdown body (.recruiter-handbook-content):
+       - Target ~65–75ch prose: clamp width via nested max-width wrapper
+       - Section rhythm via border-dividers + spacing scale
+       - Avoid drop shadows inside print flows
+       -- */
+    .copilot-page #handbook-content.recruiter-handbook-content {
+      padding: 0 clamp(1rem, 2.5vw, 2rem) clamp(1.75rem, 3vw, 2.75rem);
+      font-size: 0.9625rem;
+      width: 100%;
+      max-width: 100%;
+      margin-inline: 0;
+    }
+
+    /* Sticky recruiter controls — scoped to handbook column (inside shell card) */
+    .hb-handbook-sticky-controls {
+      position: sticky;
+      top: 56px;
+      z-index: 1030;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.35rem 0.75rem;
+      padding: 0.5rem clamp(1rem, 2.5vw, 2rem);
+      margin-inline: calc(-1 * clamp(1rem, 2.5vw, 2rem));
+      margin-block-end: 0;
+      border-block-end: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--surface-1) 94%, transparent);
+      backdrop-filter: blur(10px);
+    }
+    .hb-handbook-sticky-controls .btn-link {
+      color: var(--primary-blue);
+      font-weight: 600;
+      text-decoration: none;
+      padding: 0.35rem 0.25rem;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+    .hb-handbook-sticky-controls .btn-link:hover {
+      text-decoration: underline;
+      color: var(--pl-primary-dark);
+    }
+    .hb-handbook-sticky-controls .hb-controls-sep {
+      color: var(--ink-500);
+      font-size: 0.75rem;
+      user-select: none;
+    }
+    .hb-handbook-sticky-controls .hb-jump-boolean {
+      margin-inline-start: auto;
+      font-weight: 600;
+      font-size: 0.8125rem;
+    }
+
+    .hb-title-row {
+      padding: clamp(1rem, 2vw, 1.75rem) 0 clamp(1rem, 2vw, 1.25rem);
+      margin-inline: 0;
+      margin-block-start: clamp(1rem, 2vw, 1.75rem);
+      border-block-end: 1px solid var(--hairline);
+      margin-block-end: 0;
+    }
+    .hb-doc-title {
+      font-size: clamp(1.45rem, 2.8vw, 1.85rem);
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      color: var(--ink-950);
+    }
+
+    .hb-toc-mini {
+      background: color-mix(in srgb, var(--surface-0) 75%, white);
+      border: 1px solid var(--hairline);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+    }
+    .hb-toc-mini strong {
+      font-weight: 600;
+      color: var(--ink-700);
+    }
+    .hb-toc-mini a {
+      white-space: nowrap;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .hb-toc-mini a:hover {
+      text-decoration: underline;
+    }
+    .hb-handbook-sticky-controls .hb-jump-boolean {
+      cursor: pointer;
+    }
+
+    /* Accordion sections (h2 lives in summary — premium hairline chrome) */
+    #handbook-content > details.hb-acc {
+      border-inline: none;
+      border-block: none;
+      border-block-end: 1px solid var(--hairline);
+      margin: 0;
+      background: var(--surface-1);
+      transition: background 0.18s ease;
+    }
+    #handbook-content > details.hb-acc:nth-of-type(even) {
+      background: color-mix(in srgb, var(--surface-0) 55%, white);
+    }
+    #handbook-content > details.hb-acc:first-of-type {
+      border-block-start: 1px solid var(--hairline);
+    }
+    .hb-acc-summary {
+      list-style: none;
+      cursor: pointer;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.625rem;
+      padding: 1rem clamp(1rem, 2.5vw, 2rem) 1rem clamp(1rem, 2.5vw, 2rem);
+      margin: 0;
+      color: inherit;
+      user-select: none;
+    }
+    .hb-acc-summary:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+    .hb-acc-summary::-webkit-details-marker {
+      display: none;
+    }
+    .hb-acc-chevron .bi-chevron-down {
+      display: block;
+      transition: transform 0.18s ease;
+    }
+    details.hb-acc:not([open]) .hb-acc-chevron .bi-chevron-down {
+      transform: rotate(-90deg);
+    }
+    .hb-acc-summary h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      margin: 0;
+      padding: 0;
+      border: none;
+      color: var(--primary-blue);
+      scroll-margin-top: calc(56px + 52px + 24px);
+    }
+    .hb-acc-chevron {
+      color: var(--primary-blue);
+    }
+    .hb-acc-body {
+      padding-block: 0 1.25rem;
+      padding-inline: clamp(1rem, 2.5vw, 2rem) clamp(1rem, 2.5vw, 2rem);
+      padding-inline-start: calc(clamp(1rem, 2.5vw, 2rem) + 1.5rem);
+    }
+    #handbook-result-section .recruiter-handbook-content h2,
+    #handbook-result-section .recruiter-handbook-content h3,
+    #handbook-result-section .recruiter-handbook-content h4 {
+      color: var(--primary-blue);
+    }
+    .recruiter-handbook-content h3 {
+      font-size: 0.9625rem;
+      font-weight: 600;
+      margin: 1.25rem 0 0.5rem;
+    }
+    #handbook-result-section .recruiter-handbook-content .sf-category {
+      color: var(--primary-blue);
+    }
+    #handbook-result-section .recruiter-handbook-content ul li::marker,
+    #handbook-result-section .recruiter-handbook-content ol li::marker {
+      color: var(--primary-blue);
+    }
+    .recruiter-handbook-content p {
+      margin: 0 0 0.85rem;
+      color: var(--ink-700);
+    }
+    .recruiter-handbook-content ul,
+    .recruiter-handbook-content ol {
+      margin: 0 0 1rem;
+      padding-inline-start: 1.25rem;
+      color: var(--ink-700);
+    }
+    .recruiter-handbook-content li + li {
+      margin-top: 0.35rem;
+    }
+
+    .hb-table-wrap {
+      margin: 0.75rem 0 1.25rem;
+      border-radius: 12px;
+      border: 1px solid var(--hairline);
+      overflow: auto;
+      box-shadow: var(--shadow-sm);
+    }
+    .recruiter-handbook-content table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 0.9rem;
+    }
+    .recruiter-handbook-content thead th {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background: var(--primary-blue);
+      color: #fff;
+      font-weight: 600;
+      text-align: start;
+      padding: 0.65rem 0.85rem;
+      border-block-end: 1px solid var(--pl-primary-dark);
+      white-space: nowrap;
+    }
+    .recruiter-handbook-content tbody td {
+      padding: 0.65rem 0.85rem;
+      vertical-align: top;
+      border-block-end: 1px solid var(--hairline);
+      border-inline-end: 1px solid var(--hairline);
+    }
+    .recruiter-handbook-content tbody td:last-child {
+      border-inline-end: none;
+    }
+    .recruiter-handbook-content tbody tr:last-child td {
+      border-block-end: none;
+    }
+
+    /* Boolean search samples — one copy control per sample */
+    .hb-boolean-samples-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      margin: 0.75rem 0 1rem;
+    }
+    .hb-boolean-sample {
+      border: 1px solid var(--hairline);
+      border-radius: 10px;
+      background: color-mix(in srgb, var(--surface-0) 70%, white);
+      overflow: hidden;
+    }
+    .hb-boolean-sample__toolbar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      padding: 0.45rem 0.65rem;
+      border-block-end: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--surface-0) 40%, white);
+    }
+    .hb-boolean-sample__label {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--primary-blue);
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+    .hb-boolean-sample__toolbar .hb-copy-boolean-btn {
+      margin-inline-start: auto;
+      flex-shrink: 0;
+    }
+    .hb-boolean-sample__query {
+      margin: 0;
+      padding: 0.75rem 0.85rem;
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      line-height: 1.45;
+      color: var(--ink-950);
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .hb-copy-boolean-btn {
+      --bs-btn-padding-y: 0.3rem;
+      --bs-btn-padding-x: 0.55rem;
+      --bs-btn-font-size: 0.72rem;
+      border-radius: 8px;
+    }
+
+    .hb-github-sourcing-group .hb-github-sourcing-hint {
+      margin: 0 0 0.25rem;
+      padding: 0 0.65rem 0.55rem;
+      font-size: 0.75rem;
+      line-height: 1.45;
+      color: var(--ink-500);
+    }
+
+    .hb-code,
+    .recruiter-handbook-content pre {
+      margin: 0;
+      padding: 0.85rem 1rem;
+      background: transparent;
+      border: none;
+      border-radius: 0;
+      font-family: var(--font-mono);
+      font-size: 0.8125rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      color: var(--ink-950);
+    }
+    .hb-sourcing-console .hb-code,
+    .hb-sourcing-console pre {
+      padding: 0.75rem 1rem;
+    }
+
+    /* One PLUTO operational moment — sparse, aligned to accent budget */
+    .hb-pluto-tip {
+      margin: 0.75rem 0 1rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 10px;
+      border: 1px solid color-mix(in srgb, var(--support-green) 22%, var(--hairline));
+      border-inline-start: 3px solid var(--support-green);
+      background: color-mix(in srgb, var(--support-green) 8%, white);
+      font-size: 0.9rem;
+      color: var(--ink-950);
+      line-height: 1.52;
+      font-weight: 500;
+    }
+
+    .hb-acc-body > :first-child {
+      margin-block-start: 0;
+    }
+
+    .hb-chip-pos {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: color-mix(in srgb, var(--support-green) 16%, white);
+      color: color-mix(in srgb, var(--support-green) 88%, black);
+      border: 1px solid color-mix(in srgb, var(--support-green) 42%, transparent);
+      vertical-align: middle;
+      margin-inline-end: 0.35rem;
+    }
+
+    .hb-callout {
+      margin-top: 0.85rem;
+      padding: 0.95rem 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--hairline);
+      background: color-mix(in srgb, var(--surface-0) 55%, white);
+    }
+    .hb-callout h3 {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0;
+      color: var(--ink-950);
+    }
+    .hb-callout .bi {
+      color: var(--support-green);
+      font-size: 1.1rem;
+    }
+
+    #handbook-next-steps,
+    #handbook-feedback-section {
+      margin-top: 1rem;
+      background: var(--surface-1);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--hairline);
+      padding: clamp(1.25rem, 2.2vw, 1.75rem);
+      box-shadow: var(--shadow-md);
+    }
+    #handbook-next-steps h2,
+    #handbook-feedback-section h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem;
+    }
+    #handbook-next-steps p,
+    #handbook-feedback-section .text-muted {
+      font-size: 0.9425rem;
+      max-width: 56ch;
+    }
+
+    /* Star rating */
+    #handbook-star-rating {
+      display: flex;
+      gap: 0.35rem;
+      align-items: center;
+    }
+    #handbook-star-rating button.star {
+      min-width: 44px;
+      min-height: 44px;
+      border-radius: 10px;
+      border: 1px solid var(--hairline);
+      background: #fff;
+      color: var(--ink-500);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      cursor: pointer;
+      transition: background 0.18s ease, border-color 0.18s ease, transform 0.12s ease;
+    }
+    #handbook-star-rating button.star .bi-star-fill {
+      display: none;
+    }
+    #handbook-star-rating button.star.is-on,
+    #handbook-star-rating button.star.selected {
+      border-color: color-mix(in srgb, var(--primary-blue) 45%, var(--hairline));
+      background: color-mix(in srgb, var(--primary-blue) 10%, white);
+      color: var(--primary-blue);
+    }
+    #handbook-star-rating button.star.is-on .bi-star,
+    #handbook-star-rating button.star.selected .bi-star {
+      display: none;
+    }
+    #handbook-star-rating button.star.is-on .bi-star-fill,
+    #handbook-star-rating button.star.selected .bi-star-fill {
+      display: inline-block;
+    }
+    #handbook-star-rating button.star:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+    }
+
+    textarea#handbook-feedback-comments {
+      min-height: 120px;
+      resize: vertical;
+      font-size: 0.95rem;
+    }
+
+    #handbook-feedback-already-submitted {
+      border-radius: 10px;
+      border: 1px solid color-mix(in srgb, var(--support-green) 35%, transparent);
+      background: color-mix(in srgb, var(--support-green) 12%, white);
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .btn {
+      border-radius: 10px;
+      font-weight: 600;
+      padding-block: 0.55rem;
+      padding-inline: 1rem;
+      transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.12s ease;
+    }
+    .btn-lg {
+      padding-block: 0.7rem;
+      padding-inline: 1.35rem;
+    }
+    .btn-primary {
+      --bs-btn-bg: var(--primary-blue);
+      --bs-btn-border-color: var(--primary-blue);
+      --bs-btn-hover-bg: var(--pl-primary-dark);
+      --bs-btn-hover-border-color: var(--pl-primary-dark);
+      --bs-btn-active-bg: var(--pl-primary-dark);
+      --bs-btn-active-border-color: var(--pl-primary-dark);
+    }
+    .btn-outline-secondary {
+      --bs-btn-hover-bg: rgba(13, 111, 174, 0.06);
+      --bs-btn-hover-border-color: var(--pl-border);
+      --bs-btn-color: var(--ink-700);
+    }
+    .btn:focus-visible {
+      box-shadow: var(--focus-ring);
+    }
+
+.copilot-page .hb-handbook-sticky-controls {
+  top: 72px;
+}
+
+/* —— Dark mode: align handbook workspace with copilot --cp-* tokens —— */
+html[data-theme="dark"] .copilot-page #handbook-result-section {
+  --ink-950: var(--cp-fg, oklch(95% 0.005 250));
+  --ink-700: oklch(82% 0.012 250);
+  --ink-500: var(--cp-muted, oklch(72% 0.012 250));
+  --surface-0: var(--cp-bg, oklch(22% 0.02 240));
+  --surface-1: var(--cp-surface, oklch(27% 0.02 240));
+  --hairline: var(--cp-border, oklch(34% 0.02 240));
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-md: var(--cp-shadow-md, 0 12px 24px -6px rgba(0, 0, 0, 0.45));
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--c-blue) 55%, transparent);
+  --hb-tint: oklch(30% 0.02 240);
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .handbook-shell-card,
+html[data-theme="dark"] .copilot-page #handbook-next-steps,
+html[data-theme="dark"] .copilot-page #handbook-feedback-section {
+  background: var(--surface-1);
+  border-color: var(--hairline);
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .handbook-shell-card:hover {
+  border-color: color-mix(in srgb, var(--c-blue) 32%, var(--hairline));
+  box-shadow: var(--shadow-md);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .handbook-header {
+  border-block-end-color: var(--hairline);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .handbook-header h1,
+html[data-theme="dark"] .copilot-page #handbook-result-section #handbook-result-page-title {
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section #handbook-cta-banner {
+  background: color-mix(in srgb, var(--support-green) 18%, var(--surface-1));
+  border-color: color-mix(in srgb, var(--support-green) 40%, var(--hairline));
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section #handbook-cta-banner p {
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-handbook-sticky-controls {
+  background: color-mix(in srgb, var(--surface-1) 92%, transparent);
+  border-block-end-color: var(--hairline);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-handbook-sticky-controls .btn-link:hover {
+  color: color-mix(in srgb, var(--c-blue) 85%, white);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-toc-mini {
+  background: var(--hb-tint);
+  border-color: var(--hairline);
+  color: var(--ink-700);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-toc-mini a {
+  color: var(--c-blue);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section #handbook-content > details.hb-acc {
+  background: var(--surface-1);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section #handbook-content > details.hb-acc:nth-of-type(even) {
+  background: color-mix(in srgb, var(--surface-0) 65%, var(--surface-1));
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-acc-summary {
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .recruiter-handbook-content p,
+html[data-theme="dark"] .copilot-page #handbook-result-section .recruiter-handbook-content ul,
+html[data-theme="dark"] .copilot-page #handbook-result-section .recruiter-handbook-content ol,
+html[data-theme="dark"] .copilot-page #handbook-result-section .recruiter-handbook-content li {
+  color: var(--ink-700);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .recruiter-handbook-content tbody td {
+  background: var(--surface-1);
+  color: var(--ink-700);
+  border-color: var(--hairline);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .recruiter-handbook-content tbody tr:nth-child(even) td {
+  background: color-mix(in srgb, var(--surface-0) 70%, var(--surface-1));
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-boolean-sample {
+  background: color-mix(in srgb, var(--surface-0) 55%, var(--surface-1));
+  border-color: var(--hairline);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-boolean-sample__toolbar {
+  background: var(--hb-tint);
+  border-block-end-color: var(--hairline);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-boolean-sample__query,
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-code,
+html[data-theme="dark"] .copilot-page #handbook-result-section .recruiter-handbook-content pre {
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-pluto-tip {
+  background: color-mix(in srgb, var(--support-green) 14%, var(--surface-1));
+  border-color: color-mix(in srgb, var(--support-green) 35%, var(--hairline));
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-chip-pos {
+  background: color-mix(in srgb, var(--support-green) 22%, var(--surface-1));
+  color: color-mix(in srgb, var(--support-green) 75%, var(--ink-950));
+  border-color: color-mix(in srgb, var(--support-green) 45%, var(--hairline));
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-callout {
+  background: var(--hb-tint);
+  border-color: var(--hairline);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-callout h3 {
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section #handbook-star-rating button.star {
+  background: var(--surface-1);
+  border-color: var(--hairline);
+  color: var(--ink-500);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section #handbook-star-rating button.star.is-on,
+html[data-theme="dark"] .copilot-page #handbook-result-section #handbook-star-rating button.star.selected {
+  background: color-mix(in srgb, var(--c-blue) 18%, var(--surface-1));
+  border-color: color-mix(in srgb, var(--c-blue) 45%, var(--hairline));
+  color: var(--c-blue);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section #handbook-feedback-already-submitted {
+  background: color-mix(in srgb, var(--support-green) 16%, var(--surface-1));
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .text-secondary,
+html[data-theme="dark"] .copilot-page #handbook-result-section .text-muted {
+  color: var(--ink-500) !important;
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section textarea#handbook-feedback-comments,
+html[data-theme="dark"] .copilot-page #handbook-result-section .form-control {
+  background: var(--surface-0);
+  border-color: var(--hairline);
+  color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section textarea#handbook-feedback-comments::placeholder {
+  color: var(--pl-placeholder);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .btn-outline-secondary {
+  --bs-btn-color: var(--ink-700);
+  --bs-btn-border-color: var(--hairline);
+  --bs-btn-bg: transparent;
+  --bs-btn-hover-bg: color-mix(in srgb, var(--c-blue) 14%, var(--surface-1));
+  --bs-btn-hover-border-color: color-mix(in srgb, var(--c-blue) 40%, var(--hairline));
+  --bs-btn-hover-color: var(--ink-950);
+}
+
+html[data-theme="dark"] .copilot-page #handbook-result-section .hb-copy-boolean-btn {
+  --bs-btn-color: var(--ink-700);
+  --bs-btn-border-color: var(--hairline);
+  --bs-btn-bg: var(--surface-1);
+  --bs-btn-hover-bg: color-mix(in srgb, var(--c-blue) 12%, var(--surface-1));
+  --bs-btn-hover-color: var(--ink-950);
+}
+
+@media (max-width: 991.98px) {
+  .copilot-page #handbook-result-section .handbook-header {
+    flex-direction: column;
+  }
+  .copilot-page #handbook-result-section .handbook-header .actions-row {
+    width: 100%;
+  }
+}
+
+@media print {
+  .copilot-page .hb-handbook-sticky-controls {
+    display: none !important;
+  }
+  .copilot-page #handbook-cta-banner,
+  .copilot-page .handbook-shell-card,
+  .copilot-page #handbook-next-steps,
+  .copilot-page #handbook-feedback-section {
+    box-shadow: none !important;
+    border-color: var(--pl-border) !important;
+  }
+  .copilot-page #handbook-star-rating button.star {
+    border-color: var(--pl-border);
+  }
+  .copilot-page details.hb-acc > .hb-acc-body {
+    display: block !important;
+  }
+  .copilot-page details.hb-acc > summary .hb-acc-chevron {
+    display: none;
+  }
+}

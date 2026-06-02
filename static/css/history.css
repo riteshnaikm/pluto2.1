@@ -1,0 +1,338 @@
+/**
+ * Job History — aligned with Co-Pilot / resume-evaluator shell
+ */
+.history-page .history-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 14px;
+    margin-bottom: 1.25rem;
+}
+
+.history-page .history-stat {
+    background: var(--cp-surface, var(--pl-white));
+    border: 1px solid var(--cp-border, var(--pl-border));
+    border-radius: var(--radius-lg, 16px);
+    padding: 1rem 1.15rem;
+    box-shadow: var(--cp-shadow-md, 0 8px 20px rgba(0, 0, 0, 0.06));
+}
+
+.history-page .history-stat .stat-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--cp-muted, var(--pl-text-secondary));
+    margin-bottom: 0.35rem;
+}
+
+.history-page .history-stat .stat-value {
+    font-size: 1.65rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--cp-fg, var(--pl-text-primary));
+    line-height: 1.1;
+}
+
+.history-page .history-stat.stat-primary .stat-value { color: var(--pl-primary); }
+.history-page .history-stat.stat-olive .stat-value { color: var(--pl-olive); }
+.history-page .history-stat.stat-yellow .stat-value { color: var(--pl-yellow-dark); }
+.history-page .history-stat.stat-orange .stat-value { color: var(--pl-orange); }
+
+.history-page .history-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.25rem;
+}
+
+.history-page .history-search {
+    flex: 1 1 280px;
+    max-width: 420px;
+}
+
+.history-page .history-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.history-page .history-filter-btn {
+    border-radius: 999px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--cp-border, var(--pl-border));
+    background: var(--cp-surface, var(--pl-white));
+    color: var(--cp-muted, var(--pl-text-secondary));
+    transition: all 0.18s ease;
+}
+
+.history-page .history-filter-btn:hover,
+.history-page .history-filter-btn.active {
+    background: var(--pl-primary-light);
+    border-color: var(--pl-primary);
+    color: var(--pl-primary);
+}
+
+.history-page .history-sort {
+    min-width: 180px;
+}
+
+.history-page .job-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.history-page .job-card {
+    background: var(--cp-surface, var(--pl-white));
+    border: 1px solid var(--cp-border, var(--pl-border));
+    border-radius: var(--radius-lg, 16px);
+    padding: 1.15rem 1.25rem;
+    box-shadow: var(--cp-shadow-md, 0 8px 20px rgba(0, 0, 0, 0.05));
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.history-page .job-card:hover {
+    border-color: color-mix(in srgb, var(--pl-primary) 35%, var(--pl-border));
+    box-shadow: var(--cp-shadow-lg, 0 12px 28px rgba(0, 0, 0, 0.08));
+}
+
+.history-page .job-card-header {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+}
+
+.history-page .job-card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--cp-fg, var(--pl-text-primary));
+    margin: 0 0 0.25rem;
+    letter-spacing: -0.02em;
+}
+
+.history-page .job-card-title a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.history-page .job-card-title a:hover {
+    color: var(--pl-primary);
+}
+
+.history-page .job-id-badge {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.2rem 0.55rem;
+    border-radius: 6px;
+    background: var(--pl-primary-light);
+    color: var(--pl-primary);
+}
+
+.history-page .job-meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    font-size: 0.8125rem;
+    color: var(--cp-muted, var(--pl-text-secondary));
+}
+
+.history-page .job-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: color-mix(in srgb, var(--pl-primary) 8%, var(--pl-white));
+    color: var(--pl-text-primary);
+    border: 1px solid var(--pl-border);
+}
+
+.history-page .job-pill.pill-handbook {
+    background: var(--pl-primary-light);
+    border-color: color-mix(in srgb, var(--pl-primary) 25%, transparent);
+    color: var(--pl-primary);
+}
+
+.history-page .job-pill.pill-eval {
+    background: var(--pl-olive-light);
+    border-color: color-mix(in srgb, var(--pl-olive) 25%, transparent);
+    color: var(--pl-olive-dark);
+}
+
+.history-page .job-pill.pill-avg-strong { background: var(--pl-olive-light); color: var(--pl-olive); }
+.history-page .job-pill.pill-avg-moderate { background: var(--pl-yellow-light); color: var(--pl-yellow-dark); }
+.history-page .job-pill.pill-avg-weak { background: var(--pl-orange-light); color: var(--pl-orange); }
+
+.history-page .resume-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 0.65rem;
+}
+
+.history-page .resume-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0.35rem 0.65rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    background: color-mix(in srgb, var(--pl-primary) 10%, var(--pl-white));
+    border: 1px solid var(--pl-border);
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+    max-width: 100%;
+}
+
+.history-page .resume-chip:hover {
+    background: color-mix(in srgb, var(--pl-primary) 18%, var(--pl-white));
+    transform: translateY(-1px);
+}
+
+.history-page .resume-chip .score-strong { color: var(--pl-olive); font-weight: 700; }
+.history-page .resume-chip .score-moderate { color: var(--pl-yellow-dark); font-weight: 700; }
+.history-page .resume-chip .score-weak { color: var(--pl-orange); font-weight: 700; }
+
+.history-page .job-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.history-page .history-empty-state {
+    text-align: center;
+    padding: 3rem 1.5rem;
+    border-radius: var(--radius-lg, 16px);
+    border: 1px dashed var(--pl-border);
+    background: var(--pl-primary-light);
+}
+
+.history-page .history-empty-state i {
+    font-size: 2.5rem;
+    color: var(--pl-primary);
+}
+
+.history-page .copilot-nav-card.history-theme .card-bg {
+    background: linear-gradient(135deg, var(--pl-yellow), var(--pl-orange));
+}
+
+.history-page .copilot-nav-card.history-theme.active {
+    border-color: var(--pl-primary);
+}
+
+/* Modals */
+.history-modal .modal-header {
+    background: var(--pl-primary-light);
+    border-bottom: 1px solid var(--pl-border);
+}
+
+.history-modal .modal-title {
+    color: var(--pl-text-primary);
+    font-weight: 700;
+}
+
+.history-modal .eval-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--pl-border);
+}
+
+@media (max-width: 768px) {
+    .history-page .eval-row {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
+    .history-page .job-card-header {
+        flex-direction: column;
+    }
+}
+
+.history-modal .match-ring-sm {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    font-weight: 800;
+    border: 3px solid currentColor;
+}
+
+.history-modal .match-ring-sm.tier-strong { color: var(--pl-olive); background: var(--pl-olive-light); }
+.history-modal .match-ring-sm.tier-moderate { color: var(--pl-yellow-dark); background: var(--pl-yellow-light); }
+.history-modal .match-ring-sm.tier-weak { color: var(--pl-orange); background: var(--pl-orange-light); }
+
+/* Batch vs single evaluation markers */
+.history-page .eval-mode-icon {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.history-page .eval-mode-batch { color: var(--pl-orange); }
+.history-page .eval-mode-single { color: var(--pl-primary); }
+
+.history-page .eval-mode-badge-batch {
+    background: var(--pl-orange-light) !important;
+    color: var(--pl-orange) !important;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.history-page .eval-mode-badge-single {
+    background: var(--pl-primary-light) !important;
+    color: var(--pl-primary) !important;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.history-page .resume-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-page .resume-chip--batch {
+    border-color: color-mix(in srgb, var(--pl-orange) 35%, var(--pl-border));
+    background: color-mix(in srgb, var(--pl-orange) 8%, var(--pl-white));
+}
+
+.history-page .resume-chip--single {
+    border-color: color-mix(in srgb, var(--pl-primary) 25%, var(--pl-border));
+}
+
+.history-page .eval-row > div:first-child {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.history-legend {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.78rem;
+}
+
+.history-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}

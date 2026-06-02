@@ -1,0 +1,516 @@
+/* MatchMaker multi-resume comparison results */
+.batch-comparison-shell {
+    max-width: 100%;
+}
+
+.batch-comparison-meta {
+    font-size: 0.92rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+.batch-comparison-meta .eval-mode-icon {
+    color: var(--pl-orange);
+    vertical-align: -0.1em;
+}
+
+.batch-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+/* Shared: batch vs single evaluation markers (History + MatchMaker) */
+.eval-mode-icon {
+    font-size: 0.95rem;
+    flex-shrink: 0;
+}
+
+.eval-mode-batch {
+    color: var(--pl-orange);
+}
+
+.eval-mode-single {
+    color: var(--pl-primary);
+}
+
+.eval-mode-badge-batch {
+    background: var(--pl-orange-light) !important;
+    color: var(--pl-orange) !important;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.eval-mode-badge-single {
+    background: var(--pl-primary-light) !important;
+    color: var(--pl-primary) !important;
+    font-size: 0.68rem;
+    font-weight: 700;
+}
+
+.history-page .resume-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.history-page .resume-chip--batch {
+    border-color: color-mix(in srgb, var(--pl-orange) 35%, var(--pl-border));
+    background: color-mix(in srgb, var(--pl-orange) 8%, var(--pl-white));
+}
+
+.history-page .resume-chip--single {
+    border-color: color-mix(in srgb, var(--pl-primary) 25%, var(--pl-border));
+}
+
+.history-page .eval-row > div:first-child {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+.batch-leaderboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-bottom: 1.5rem;
+}
+
+.batch-candidate-card {
+    border: 1px solid var(--pl-border);
+    border-radius: 14px;
+    padding: 1rem 1.1rem;
+    background: var(--pl-white);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.batch-candidate-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--batch-accent, var(--pl-primary));
+}
+
+.batch-candidate-card.rank-1 {
+    border-color: color-mix(in srgb, var(--pl-olive) 40%, var(--pl-border));
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--pl-olive) 12%, transparent);
+}
+
+.batch-candidate-card-header {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.batch-rank-badge {
+    flex: 0 0 auto;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 8px;
+    background: var(--pl-primary-light);
+    color: var(--pl-primary);
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.batch-candidate-card.rank-1 .batch-rank-badge {
+    background: var(--pl-olive-light);
+    color: var(--pl-olive);
+}
+
+.batch-candidate-avatar {
+    flex: 0 0 auto;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 0.95rem;
+    background: var(--pl-primary-light);
+    color: var(--pl-primary);
+    border: 2px solid color-mix(in srgb, var(--pl-primary) 25%, transparent);
+}
+
+.batch-candidate-card.tier-strong .batch-candidate-avatar {
+    background: var(--pl-olive-light);
+    color: var(--pl-olive);
+    border-color: color-mix(in srgb, var(--pl-olive) 35%, transparent);
+}
+
+.batch-candidate-card.tier-moderate .batch-candidate-avatar {
+    background: var(--pl-yellow-light);
+    color: var(--pl-yellow-dark);
+    border-color: color-mix(in srgb, var(--pl-yellow) 35%, transparent);
+}
+
+.batch-candidate-card.tier-weak .batch-candidate-avatar {
+    background: var(--pl-orange-light);
+    color: var(--pl-orange);
+    border-color: color-mix(in srgb, var(--pl-orange) 35%, transparent);
+}
+
+.batch-candidate-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.batch-candidate-name {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--pl-text-primary);
+    margin: 0 0 0.15rem;
+    word-break: break-word;
+}
+
+.batch-match-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+}
+
+.batch-match-pill.tier-strong { color: var(--pl-olive); }
+.batch-match-pill.tier-moderate { color: var(--pl-yellow-dark); }
+.batch-match-pill.tier-weak { color: var(--pl-orange); }
+
+.batch-verdict-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--pl-text-secondary);
+}
+
+.batch-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.batch-chip {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid var(--pl-border);
+    background: var(--pl-surface);
+    color: var(--pl-text-primary);
+}
+
+.batch-chip.chip-strength {
+    background: var(--pl-olive-light);
+    border-color: color-mix(in srgb, var(--pl-olive) 25%, transparent);
+    color: var(--pl-olive-dark);
+}
+
+.batch-chip.chip-gap {
+    background: var(--pl-orange-light);
+    border-color: color-mix(in srgb, var(--pl-orange) 25%, transparent);
+    color: var(--pl-orange);
+}
+
+.batch-section-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--pl-text-secondary);
+    margin: 0.25rem 0 0;
+}
+
+/* Side-by-side matrix */
+.batch-matrix-wrap h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--pl-text-primary);
+}
+
+.batch-matrix-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.875rem;
+    border: 1px solid var(--pl-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.batch-matrix-table th,
+.batch-matrix-table td {
+    padding: 0.65rem 0.85rem;
+    border-bottom: 1px solid var(--pl-border);
+    vertical-align: middle;
+}
+
+.batch-matrix-table thead th {
+    background: var(--pl-primary);
+    color: var(--pl-white);
+    font-weight: 700;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.batch-matrix-table tbody th {
+    background: var(--pl-surface);
+    font-weight: 600;
+    color: var(--pl-text-primary);
+    text-align: left;
+    width: 28%;
+}
+
+.batch-matrix-table tbody tr:last-child th,
+.batch-matrix-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.batch-matrix-table .cell-score {
+    font-weight: 800;
+    text-align: center;
+}
+
+.batch-matrix-table .cell-score.tier-strong { color: var(--pl-olive); }
+.batch-matrix-table .cell-score.tier-moderate { color: var(--pl-yellow-dark); }
+.batch-matrix-table .cell-score.tier-weak { color: var(--pl-orange); }
+
+/* Per-candidate accordions */
+.batch-candidate-details {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.batch-detail-panel {
+    border: 1px solid var(--pl-border);
+    border-radius: 12px;
+    background: var(--pl-white);
+    overflow: hidden;
+}
+
+.batch-detail-panel summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.85rem 1rem;
+    font-weight: 700;
+    color: var(--pl-text-primary);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: color-mix(in srgb, var(--pl-primary) 5%, var(--pl-white));
+}
+
+.batch-detail-panel summary::-webkit-details-marker { display: none; }
+
+.batch-detail-panel[open] summary {
+    border-bottom: 1px solid var(--pl-border);
+}
+
+.batch-detail-body {
+    padding: 1rem 1.1rem 1.1rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: var(--pl-text-primary);
+}
+
+.batch-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (max-width: 768px) {
+    .batch-detail-grid { grid-template-columns: 1fr; }
+}
+
+.batch-detail-list {
+    margin: 0;
+    padding-left: 1.1rem;
+}
+
+.batch-detail-list li { margin-bottom: 0.35rem; }
+
+.batch-report-details {
+    border: 1px dashed var(--pl-border);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    background: var(--pl-surface);
+}
+
+.batch-report-summary {
+    font-weight: 700;
+    color: var(--pl-primary);
+    cursor: pointer;
+    user-select: none;
+}
+
+.batch-report-markdown {
+    max-height: 70vh;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.batch-report-markdown {
+    line-height: 1.55;
+    color: var(--pl-text-primary);
+}
+
+.batch-report-markdown h1 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--pl-primary);
+    margin: 1.5rem 0 0.75rem;
+    padding-bottom: 0.35rem;
+    border-bottom: 2px solid var(--pl-primary-light);
+}
+
+.batch-report-markdown h2.batch-report-candidate-heading,
+.batch-report-markdown h2 {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: var(--pl-text-primary);
+    margin: 1.75rem 0 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: var(--pl-olive-light);
+    border-left: 4px solid var(--pl-olive);
+    border-radius: 0 8px 8px 0;
+}
+
+.batch-report-markdown h3 {
+    font-size: 0.92rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--pl-primary);
+    margin: 1.25rem 0 0.5rem;
+}
+
+/* Candidate summary — two-column field table (not packed inline bold lines) */
+.batch-report-markdown table.batch-summary-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.875rem;
+    margin: 0.5rem 0 1.25rem;
+    border: 1px solid var(--pl-border);
+    border-radius: 12px;
+    overflow: hidden;
+    table-layout: fixed;
+}
+
+.batch-report-markdown table.batch-summary-table td {
+    padding: 0.6rem 0.85rem;
+    border-bottom: 1px solid var(--pl-border);
+    vertical-align: top;
+    word-break: break-word;
+}
+
+.batch-report-markdown table.batch-summary-table tr:last-child td {
+    border-bottom: none;
+}
+
+.batch-report-markdown table.batch-summary-table td:first-child {
+    width: 32%;
+    font-weight: 700;
+    background: var(--pl-surface);
+    color: var(--pl-text-secondary);
+}
+
+.batch-report-markdown table.batch-summary-table td:last-child {
+    color: var(--pl-text-primary);
+}
+
+/* Multi-candidate comparison at end of report */
+.batch-report-markdown table.batch-comparison-report-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+    margin: 0.75rem 0 1rem;
+    border: 1px solid var(--pl-border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.batch-report-markdown table.batch-comparison-report-table th,
+.batch-report-markdown table.batch-comparison-report-table td {
+    border: 1px solid var(--pl-border);
+    padding: 0.55rem 0.7rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.batch-report-markdown table.batch-comparison-report-table thead th {
+    background: var(--pl-primary);
+    color: var(--pl-white);
+    font-weight: 700;
+    font-size: 0.78rem;
+}
+
+.batch-report-markdown table.batch-comparison-report-table tbody th {
+    background: var(--pl-surface);
+    text-align: left;
+    font-weight: 600;
+}
+
+.batch-report-markdown table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 0.75rem 0;
+}
+
+.batch-report-markdown th,
+.batch-report-markdown td {
+    border: 1px solid var(--pl-border);
+    padding: 0.5rem 0.65rem;
+}
+
+.batch-report-markdown thead th {
+    background: var(--pl-primary-light);
+    color: var(--pl-text-primary);
+}
+
+/* Hide legacy packed paragraph summaries if cached HTML still has them */
+.batch-report-enhanced p:has(strong) {
+    margin-bottom: 0.35rem;
+}
+
+.batch-report-markdown hr {
+    border: none;
+    border-top: 1px dashed var(--pl-border);
+    margin: 1.5rem 0;
+}
+
+.batch-report-markdown em {
+    font-size: 0.8rem;
+    color: var(--pl-text-secondary);
+}
+
+.batch-report-markdown p.batch-legacy-packed-summary {
+    display: none;
+}
+
+html[data-theme="dark"] .batch-candidate-card,
+html[data-theme="dark"] .batch-detail-panel {
+    background: color-mix(in srgb, var(--pl-surface) 92%, var(--pl-white));
+}

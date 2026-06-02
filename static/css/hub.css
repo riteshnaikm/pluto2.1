@@ -1,0 +1,152 @@
+/* Home hub — aligned with base.html design tokens */
+.pluto-hub {
+    max-width: 1280px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.15fr;
+    gap: 3rem;
+    padding: clamp(1.25rem, 4vh, 2.75rem) 1.5rem;
+    align-items: center;
+}
+
+@media (max-width: 1100px) {
+    .pluto-hub {
+        grid-template-columns: 1fr;
+        text-align: center;
+        gap: 2.5rem;
+    }
+}
+
+.pluto-hub__cards {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.pluto-hub__card {
+    position: relative;
+    min-height: 200px;
+    border-radius: 16px;
+    text-decoration: none;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.75rem 1.5rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    box-shadow: 0 12px 24px -6px rgba(0, 0, 0, 0.1);
+    color: #fff;
+    text-align: center;
+}
+
+.pluto-hub__card:hover {
+    transform: translateY(-6px);
+    color: #fff;
+}
+
+.pluto-hub__card--blue .pluto-hub__card-bg {
+    background: linear-gradient(135deg, var(--primary-blue), var(--pl-primary-dark));
+}
+
+.pluto-hub__card--green .pluto-hub__card-bg {
+    background: linear-gradient(135deg, var(--primary-green), var(--pl-olive-dark));
+}
+
+.pluto-hub__card--orange .pluto-hub__card-bg {
+    background: linear-gradient(135deg, var(--primary-orange), var(--pl-orange-dark));
+}
+
+.pluto-hub__card-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.pluto-hub__card-body {
+    position: relative;
+    z-index: 1;
+}
+
+.pluto-hub__icon {
+    font-size: 2.75rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.pluto-hub__title {
+    font-size: 1.45rem;
+    font-weight: 800;
+    margin-bottom: 0.35rem;
+}
+
+.pluto-hub__desc {
+    font-size: 0.95rem;
+    opacity: 0.92;
+    max-width: 280px;
+    margin: 0 auto;
+    line-height: 1.4;
+}
+
+.pluto-hub__bubble {
+    background: var(--surface-bg);
+    padding: 2rem;
+    border-radius: 24px;
+    box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--border-soft);
+    max-width: 400px;
+    font-size: 1.15rem;
+    line-height: 1.55;
+    font-weight: 500;
+    position: relative;
+}
+
+.pluto-hub__bubble b {
+    color: var(--primary-blue);
+}
+
+.pluto-hub__bubble::after {
+    content: "";
+    position: absolute;
+    right: -16px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: 16px solid transparent;
+    border-left-color: var(--surface-bg);
+}
+
+@media (max-width: 1100px) {
+    .pluto-hub__bubble::after {
+        right: 50%;
+        top: 100%;
+        transform: translateX(50%);
+        border: 16px solid transparent;
+        border-top-color: var(--surface-bg);
+    }
+}
+
+.pluto-hub__mascot img {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    filter: drop-shadow(0 24px 48px rgba(0, 0, 0, 0.12));
+    animation: pluto-hub-float 5s ease-in-out infinite;
+}
+
+@keyframes pluto-hub-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.pluto-hub__caret {
+    display: inline-block;
+    width: 2px;
+    height: 1.1em;
+    background: var(--primary-blue);
+    margin-left: 2px;
+    animation: pluto-hub-blink 1s step-end infinite;
+    vertical-align: middle;
+}
+
+@keyframes pluto-hub-blink {
+    50% { opacity: 0; }
+}

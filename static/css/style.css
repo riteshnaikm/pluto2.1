@@ -1,0 +1,401 @@
+/* General Styles */
+body {
+    padding-top: 2rem;
+    background-color: var(--pl-surface);
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: var(--pl-text-primary);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    color: var(--pl-border) !important;
+    font-weight: bold;
+}
+
+.nav-link {
+    color: var(--pl-border) !important;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--pl-primary) !important;
+}
+
+/* Card Styles */
+.card {
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 1.5rem;
+}
+
+.card-header {
+    background-color: var(--pl-text-primary);
+    color: white;
+    border-bottom: none;
+}
+
+/* Form Styles */
+.form-control {
+    border-radius: 0.25rem;
+    border: 1px solid var(--pl-border);
+    padding: 0.5rem 1rem;
+}
+
+.form-control:focus {
+    border-color: var(--pl-primary);
+    box-shadow: 0 0 0 0.2rem color-mix(in srgb, var(--pl-primary) 25%, transparent);
+}
+
+/* Button Styles */
+.btn-primary {
+    background-color: var(--pl-primary);
+    border-color: var(--pl-primary);
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: var(--pl-primary-dark);
+    border-color: var(--pl-primary-dark);
+    transform: translateY(-1px);
+}
+
+/* Progress Bar Styles */
+.progress {
+    height: 1.5rem;
+    background-color: var(--pl-border);
+    border-radius: 0.25rem;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: var(--pl-primary);
+    transition: width 0.6s ease;
+}
+
+/* List Group Styles */
+.list-group-item {
+    border: 1px solid var(--pl-border);
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-radius: 0.25rem;
+}
+
+/* Badge Styles */
+.badge {
+    padding: 0.5em 1em;
+    font-weight: 500;
+}
+
+/* Alert Styles */
+.alert {
+    border: none;
+    border-radius: 0.25rem;
+    padding: 1rem;
+}
+
+/* Tab Styles */
+.nav-tabs .nav-link {
+    color: var(--pl-text-primary) !important;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin-right: 0.5rem;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--pl-primary) !important;
+    border-bottom: 2px solid var(--pl-primary);
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: var(--pl-surface);
+    color: var(--pl-text-primary);
+}
+
+.dark-mode .card {
+    background-color: var(--pl-surface);
+    border-color: var(--pl-border);
+}
+
+.dark-mode .form-control {
+    background-color: var(--pl-surface);
+    border-color: var(--pl-border);
+    color: var(--pl-text-primary);
+}
+
+.dark-mode .list-group-item {
+    background-color: var(--pl-surface);
+    border-color: var(--pl-border);
+    color: var(--pl-text-primary);
+}
+
+/* Markdown Content Styles for Info Buddy Response */
+#response-content {
+    line-height: 1.7;
+    font-size: 15px;
+    color: var(--pl-text-primary);
+}
+
+/* Headings */
+#response-content h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    color: var(--pl-text-primary);
+    border-bottom: 2px solid var(--pl-primary);
+    padding-bottom: 0.5rem;
+}
+
+#response-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    color: var(--pl-text-secondary);
+}
+
+#response-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: var(--pl-text-secondary);
+}
+
+/* Paragraphs */
+#response-content p {
+    margin-bottom: 1rem;
+    line-height: 1.8;
+}
+
+/* Lists */
+#response-content ul,
+#response-content ol {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+}
+
+#response-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.7;
+}
+
+#response-content ul li {
+    list-style-type: disc;
+}
+
+#response-content ol li {
+    list-style-type: decimal;
+}
+
+/* Tables - Enhanced Styling */
+#response-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background-color: var(--pl-white);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-radius: 0.5rem;
+    overflow: hidden;
+    table-layout: fixed; /* more consistent column widths for long text */
+}
+
+#response-content table thead {
+    background-color: var(--pl-primary);
+    color: var(--pl-white);
+}
+
+#response-content table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.95rem;
+    border-bottom: 2px solid var(--pl-primary-dark);
+    white-space: nowrap; /* keep headers in one line */
+}
+
+#response-content table td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--pl-border);
+    vertical-align: top;
+    word-break: break-word; /* wrap long city/holiday names nicely */
+}
+
+/* Helpful default widths for first columns */
+#response-content table td:nth-child(1),
+#response-content table th:nth-child(1) { width: 110px; }
+#response-content table td:nth-child(2),
+#response-content table th:nth-child(2) { width: 100px; }
+
+#response-content table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#response-content table tbody tr:hover {
+    background-color: var(--pl-surface);
+}
+
+#response-content table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Alternating row colors for better readability */
+#response-content table tbody tr:nth-child(even) {
+    background-color: var(--pl-surface);
+}
+
+#response-content table tbody tr:nth-child(even):hover {
+    background-color: var(--pl-surface);
+}
+
+/* Table container for horizontal scroll on mobile */
+#response-content .table-container {
+    overflow-x: auto;
+    margin: 1.5rem 0;
+}
+
+/* Horizontal Rules */
+#response-content hr {
+    border: none;
+    border-top: 2px solid var(--pl-border);
+    margin: 2rem 0;
+}
+
+/* Code blocks */
+#response-content code {
+    background-color: var(--pl-surface);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', monospace;
+    font-size: 0.9em;
+    color: var(--pl-orange);
+}
+
+#response-content pre {
+    background-color: var(--pl-surface);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+#response-content pre code {
+    background-color: transparent;
+    padding: 0;
+    color: var(--pl-text-primary);
+}
+
+/* Blockquotes */
+#response-content blockquote {
+    border-left: 4px solid var(--pl-primary);
+    padding-left: 1rem;
+    margin: 1rem 0;
+    color: var(--pl-text-secondary);
+    font-style: italic;
+}
+
+/* Bold and italic */
+#response-content strong {
+    color: var(--pl-text-primary);
+    font-weight: 600;
+}
+
+/* Recruiter Handbook sub-category styling (e.g., A. Background & Motivation lines) */
+.sf-category {
+    display: block;
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--pl-text-primary);
+    margin-bottom: 2px;
+}
+.sf-detail {
+    margin-left: 0;
+    font-size: 0.95rem;
+}
+
+/* Links */
+#response-content a {
+    color: var(--pl-primary);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.2s ease;
+}
+
+#response-content a:hover {
+    border-bottom-color: var(--pl-primary);
+}
+
+/* Spacing between sections */
+#response-content > *:first-child {
+    margin-top: 0;
+}
+
+#response-content > *:last-child {
+    margin-bottom: 0;
+}
+
+/* Smooth scrolling for anchor links */
+html {
+    scroll-behavior: smooth;
+}
+
+/* TOC navigation styling */
+.toc-nav a {
+    text-decoration: none;
+}
+
+/* Ensure headings have scroll margin for anchor links */
+#handbook-content h1,
+#handbook-content h2,
+#handbook-content h3,
+#handbook-content h4,
+.recruiter-handbook-content h1,
+.recruiter-handbook-content h2,
+.recruiter-handbook-content h3,
+.recruiter-handbook-content h4 {
+    scroll-margin-top: 120px;
+}
+
+/* Blue color for main handbook section titles (EXCLUDE Introduction) */
+.copilot-page #handbook-content h2.main-section-title,
+.copilot-page #handbook-content h3.main-section-title,
+.copilot-page .recruiter-handbook-content h2.main-section-title,
+.copilot-page .recruiter-handbook-content h3.main-section-title {
+    color: var(--c-blue, #0d6fae) !important;
+}
+.copilot-page #handbook-content .sf-category,
+.copilot-page .recruiter-handbook-content .sf-category {
+    color: var(--c-blue, #0d6fae);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Smaller tables on mobile */
+    #response-content table {
+        font-size: 0.875rem;
+    }
+    
+    #response-content table th,
+    #response-content table td {
+        padding: 0.5rem;
+    }
+    
+    /* Horizontal scroll for tables on mobile */
+    #response-content {
+        overflow-x: auto;
+    }
+} 

@@ -1,0 +1,79 @@
+{# MatchMaker evaluation intake — same design system as handbook intake #}
+<form id="evaluationForm" class="copilot-generation-form matchmaker-intake-form handbook-intake-form" enctype="multipart/form-data" novalidate>
+    <p class="handbook-intake-intro text-secondary mb-4">
+        Upload a resume and align it to the role. Fields marked <span class="required-star">*</span> are required.
+        Use a Job ID to link evaluations with your handbook and <a href="{{ url_for('history') }}">job history</a>.
+    </p>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num intake-num--olive">1</span> Job reference</legend>
+        <div class="pl-form-group">
+            <label class="pl-label" for="oorwin_job_id">Req / Oorwin Job ID</label>
+            <input type="text" class="pl-input" id="oorwin_job_id" name="oorwin_job_id"
+                   placeholder="e.g. OOJ-4563, 4563" list="jobIdSuggestions" autocomplete="off">
+            <datalist id="jobIdSuggestions"></datalist>
+        </div>
+    </fieldset>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num intake-num--olive">2</span> Resume</legend>
+        <div class="pl-form-group mb-0">
+            <label class="pl-label" for="resume">Resume file <span class="required-star">*</span></label>
+            <div class="matchmaker-file-zone" id="matchmaker-file-zone">
+                <i class="bi bi-cloud-arrow-up matchmaker-file-icon" aria-hidden="true"></i>
+                <p class="matchmaker-file-title mb-1">Drop PDF or DOCX here, or click to browse</p>
+                <p class="matchmaker-file-meta mb-0">Multiple resumes supported for batch comparison</p>
+                <p class="matchmaker-file-selected small text-muted mt-2 mb-0" id="matchmaker-file-selected" aria-live="polite"></p>
+                <input type="file" class="matchmaker-file-input" id="resume" name="resume"
+                       accept=".pdf,.docx" multiple required>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num intake-num--olive">3</span> Role &amp; job description</legend>
+        <div class="pl-form-group">
+            <label class="pl-label" for="job_title">Position title <span class="required-star">*</span></label>
+            <input type="text" class="pl-input" id="job_title" name="job_title"
+                   placeholder="e.g. Software Engineer, Data Scientist" required autocomplete="organization-title">
+        </div>
+        <div class="pl-form-group mb-0">
+            <label class="pl-label" for="job_description">Job description <span class="required-star">*</span></label>
+            <textarea class="pl-textarea pl-textarea--jd" id="job_description" name="job_description" rows="8"
+                      placeholder="Paste the full job description — responsibilities, skills, and requirements…" required></textarea>
+        </div>
+    </fieldset>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num intake-num--olive">4</span> Additional context</legend>
+        <div class="pl-form-group mb-0">
+            <label class="pl-label" for="evaluation_additional_context">Recruiter notes</label>
+            <textarea class="pl-textarea pl-textarea--ctx" id="evaluation_additional_context" name="additional_context" rows="4"
+                      placeholder="Client preferences, location, language, pedigree focus, diversity goals, etc."></textarea>
+            <span class="pl-hint">Included in the semantic match alongside the job description.</span>
+        </div>
+    </fieldset>
+
+    <button type="submit" class="btn-pl green btn-pl--block mt-2" id="submitBtn">
+        Evaluate resume <i class="bi bi-person-check" aria-hidden="true"></i>
+    </button>
+
+    <div id="matchmaker-status" class="match-status" style="display:none;" aria-live="polite">
+        <p class="match-status-title">
+            <i class="bi bi-cpu-fill" style="color: var(--c-green);" aria-hidden="true"></i>
+            PLUTO is evaluating this candidate
+        </p>
+        <p class="match-status-sub" id="matchmaker-status-sub">Starting analysis…</p>
+        <div class="match-status-progress" aria-hidden="true">
+            <div id="matchmaker-status-bar"></div>
+        </div>
+        <ul class="match-status-steps" id="matchmaker-status-steps">
+            <li data-step="processing">Reading resume and inputs</li>
+            <li data-step="step1">Core JD match analysis</li>
+            <li data-step="step2">Stability and progression analysis</li>
+            <li data-step="step3">Interview question preparation</li>
+            <li data-step="step4">Saving evaluation</li>
+            <li data-step="complete">Finalizing results</li>
+        </ul>
+    </div>
+</form>

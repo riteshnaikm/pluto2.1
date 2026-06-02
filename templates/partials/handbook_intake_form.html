@@ -1,0 +1,250 @@
+{# Recruitment Intake + Handbook — merged long form #}
+<form id="handbookGenerationForm" class="copilot-generation-form handbook-intake-form" novalidate>
+    <p class="handbook-intake-intro text-secondary mb-4">
+        Complete the AM → Sourcing intake checklist. All fields marked <span class="required-star">*</span> feed the generated handbook.
+    </p>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num">Header</span> Requisition</legend>
+        <div class="row g-3">
+            <div class="col-md-6 pl-form-group">
+                <label class="pl-label" for="handbook_oorwin_job_id">Req / Oorwin Job ID</label>
+                <input type="text" class="pl-input" id="handbook_oorwin_job_id" name="oorwin_job_id"
+                       placeholder="e.g. OOJ-4563" list="handbookJobIdSuggestions" autocomplete="off">
+                <span class="pl-hint">Optional — reuse to load a prior handbook or evaluation.</span>
+            </div>
+            <div class="col-md-6 pl-form-group">
+                <span class="pl-label d-block">Priority</span>
+                <div class="intake-check-row" role="group" aria-label="Priority">
+                    <label class="intake-check"><input type="radio" name="intake_priority" value="high"> High</label>
+                    <label class="intake-check"><input type="radio" name="intake_priority" value="med" checked> Med</label>
+                    <label class="intake-check"><input type="radio" name="intake_priority" value="low"> Low</label>
+                </div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num">1</span> Role Basics</legend>
+        <div class="pl-form-group">
+            <label class="pl-label" for="handbook_job_title">Position Title <span class="required-star">*</span></label>
+            <input type="text" class="pl-input" id="handbook_job_title" name="job_title"
+                   placeholder="Official job title" required autocomplete="organization-title">
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Role Type <span class="required-star">*</span></span>
+            <div class="intake-check-row">
+                <label class="intake-check"><input type="checkbox" name="intake_role_type" value="individual_contributor"> Individual Contributor</label>
+                <label class="intake-check"><input type="checkbox" name="intake_role_type" value="people_manager"> People Manager</label>
+                <label class="intake-check"><input type="checkbox" name="intake_role_type" value="player_coach"> Player-Coach</label>
+            </div>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-6 pl-form-group">
+                <label class="pl-label" for="intake_job_location">Job Location <span class="required-star">*</span></label>
+                <input type="text" class="pl-input" id="intake_job_location" name="job_location"
+                       placeholder="City / State or Remote / Hybrid" required>
+            </div>
+            <div class="col-md-6 pl-form-group">
+                <label class="pl-label" for="intake_in_city">In-City Location</label>
+                <input type="text" class="pl-input" id="intake_in_city" name="in_city_location" placeholder="If hybrid / on-site">
+            </div>
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Work Mode</span>
+            <div class="intake-check-row">
+                <label class="intake-check"><input type="checkbox" name="intake_work_mode" value="on_site"> On-site</label>
+                <label class="intake-check"><input type="checkbox" name="intake_work_mode" value="hybrid"> Hybrid</label>
+                <label class="intake-check"><input type="checkbox" name="intake_work_mode" value="remote"> Remote</label>
+            </div>
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Working Days</span>
+            <div class="intake-check-row flex-wrap">
+                <label class="intake-check"><input type="checkbox" name="intake_working_days" value="mon_fri"> Mon – Fri</label>
+                <label class="intake-check"><input type="checkbox" name="intake_working_days" value="mon_sat"> Mon – Sat</label>
+                <label class="intake-check"><input type="checkbox" name="intake_working_days" value="five_day_flexible"> 5-day flexible</label>
+                <label class="intake-check"><input type="checkbox" name="intake_working_days" value="custom" id="intake_working_days_custom_toggle"> Custom</label>
+            </div>
+            <input type="text" class="pl-input mt-2" id="intake_working_days_custom" name="working_days_custom"
+                   placeholder="Describe custom working days" style="display:none;">
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Shift</span>
+            <div class="intake-check-row mb-2">
+                <label class="intake-check"><input type="radio" name="intake_shift" value="ist_general" checked> IST General</label>
+                <label class="intake-check"><input type="radio" name="intake_shift" value="specific"> Specific shift</label>
+            </div>
+            <div class="row g-2" id="intake_shift_times" style="display:none;">
+                <div class="col-6"><input type="time" class="pl-input" id="intake_shift_start" name="shift_start"></div>
+                <div class="col-6"><input type="time" class="pl-input" id="intake_shift_end" name="shift_end"></div>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num">2</span> Compensation &amp; Employment</legend>
+        <div class="row g-3">
+            <div class="col-md-3 pl-form-group">
+                <label class="pl-label" for="intake_budget_min">Budget Min (₹ LPA) <span class="required-star">*</span></label>
+                <input type="number" class="pl-input" id="intake_budget_min" name="budget_min_lpa" min="0" step="0.1" placeholder="12" required>
+            </div>
+            <div class="col-md-3 pl-form-group">
+                <label class="pl-label" for="intake_budget_max">Budget Max (₹ LPA) <span class="required-star">*</span></label>
+                <input type="number" class="pl-input" id="intake_budget_max" name="budget_max_lpa" min="0" step="0.1" placeholder="16" required>
+            </div>
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Travel Requirement</span>
+            <div class="intake-check-row flex-wrap">
+                <label class="intake-check"><input type="checkbox" name="intake_travel" value="none"> None</label>
+                <label class="intake-check"><input type="checkbox" name="intake_travel" value="occasional"> Occasional</label>
+                <label class="intake-check"><input type="checkbox" name="intake_travel" value="frequent"> Frequent</label>
+                <label class="intake-check"><input type="checkbox" name="intake_travel" value="pan_india"> Pan-India</label>
+                <label class="intake-check"><input type="checkbox" name="intake_travel" value="international"> International</label>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num">3</span> Candidate Profile</legend>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Years of Experience <span class="required-star">*</span></span>
+            <div class="intake-check-row flex-wrap">
+                <label class="intake-check"><input type="checkbox" name="intake_experience" value="0-2"> 0–2 yrs</label>
+                <label class="intake-check"><input type="checkbox" name="intake_experience" value="2-4"> 2–4 yrs</label>
+                <label class="intake-check"><input type="checkbox" name="intake_experience" value="4-6"> 4–6 yrs</label>
+                <label class="intake-check"><input type="checkbox" name="intake_experience" value="6-8"> 6–8 yrs</label>
+                <label class="intake-check"><input type="checkbox" name="intake_experience" value="8-10"> 8–10 yrs</label>
+                <label class="intake-check"><input type="checkbox" name="intake_experience" value="10+"> 10+ yrs</label>
+            </div>
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Education</span>
+            <div class="intake-check-row flex-wrap">
+                <label class="intake-check"><input type="checkbox" name="intake_education" value="any_graduate"> Any Graduate</label>
+                <label class="intake-check"><input type="checkbox" name="intake_education" value="btech_be"> B.Tech / B.E</label>
+                <label class="intake-check"><input type="checkbox" name="intake_education" value="mba"> MBA</label>
+                <label class="intake-check"><input type="checkbox" name="intake_education" value="mca"> MCA</label>
+                <label class="intake-check"><input type="checkbox" name="intake_education" value="ca_cma"> CA / CMA</label>
+                <label class="intake-check"><input type="checkbox" name="intake_education" value="no_preference"> No preference</label>
+            </div>
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Must-Have Skills <span class="required-star">*</span></span>
+            <div class="table-responsive">
+                <table class="table table-sm intake-skills-table" id="intake-must-have-skills-table">
+                    <thead>
+                        <tr><th>Skill</th><th>Yrs exp</th><th>Rating (1–5)</th><th></th></tr>
+                    </thead>
+                    <tbody id="intake-must-have-skills-body"></tbody>
+                </table>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm" id="intake-add-skill-row">+ Add skill</button>
+        </div>
+        <div class="pl-form-group">
+            <label class="pl-label" for="intake_good_to_have">Good-to-Have Skills</label>
+            <textarea class="pl-textarea" id="intake_good_to_have" name="good_to_have_skills" rows="2"
+                      placeholder="Nice-to-have, not deal-breakers"></textarea>
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Notice Period</span>
+            <div class="intake-check-row flex-wrap">
+                <label class="intake-check"><input type="checkbox" name="intake_notice" value="immediate"> Immediate</label>
+                <label class="intake-check"><input type="checkbox" name="intake_notice" value="15"> 15 days</label>
+                <label class="intake-check"><input type="checkbox" name="intake_notice" value="30"> 30 days</label>
+                <label class="intake-check"><input type="checkbox" name="intake_notice" value="60"> 60 days</label>
+                <label class="intake-check"><input type="checkbox" name="intake_notice" value="no_preference"> No preference</label>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num">4</span> Interview Process</legend>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Interview Levels <span class="required-star">*</span></span>
+            <div class="intake-check-row">
+                <label class="intake-check"><input type="checkbox" name="intake_interview_levels" value="1"> 1 Round</label>
+                <label class="intake-check"><input type="checkbox" name="intake_interview_levels" value="2"> 2 Rounds</label>
+                <label class="intake-check"><input type="checkbox" name="intake_interview_levels" value="3"> 3 Rounds</label>
+                <label class="intake-check"><input type="checkbox" name="intake_interview_levels" value="4plus"> 4+ Rounds</label>
+            </div>
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Assessment</span>
+            <div class="intake-check-row flex-wrap">
+                <label class="intake-check"><input type="checkbox" name="intake_assessments" value="written"> Written</label>
+                <label class="intake-check"><input type="checkbox" name="intake_assessments" value="cba"> CBA</label>
+                <label class="intake-check"><input type="checkbox" name="intake_assessments" value="coding"> Coding</label>
+                <label class="intake-check"><input type="checkbox" name="intake_assessments" value="psychometric"> Psychometric</label>
+                <label class="intake-check"><input type="checkbox" name="intake_assessments" value="language"> Language</label>
+            </div>
+        </div>
+        <div class="pl-form-group">
+            <label class="pl-label" for="intake_interview_process">Interview Process</label>
+            <textarea class="pl-textarea" id="intake_interview_process" name="interview_process" rows="2"
+                      placeholder="e.g. Shortlist → Tech → HR → Leadership"></textarea>
+        </div>
+        <div class="pl-form-group">
+            <span class="pl-label d-block">Hiring Urgency</span>
+            <div class="intake-check-row">
+                <label class="intake-check"><input type="radio" name="intake_hiring_urgency" value="standard" checked> Standard (30–45d)</label>
+                <label class="intake-check"><input type="radio" name="intake_hiring_urgency" value="priority"> Priority (15–30d)</label>
+                <label class="intake-check"><input type="radio" name="intake_hiring_urgency" value="critical"> Critical (&lt;15d)</label>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num">5</span> Job Description &amp; Notes</legend>
+        <div class="pl-form-group">
+            <label class="pl-label" for="handbook_job_description">Job Description <span class="required-star">*</span></label>
+            <textarea class="pl-textarea pl-textarea--jd" id="handbook_job_description" name="job_description" rows="8"
+                      placeholder="Key responsibilities, deliverables, context…" required></textarea>
+        </div>
+        <div class="pl-form-group">
+            <label class="pl-label" for="intake_sourcing_notes">Sourcing Notes</label>
+            <textarea class="pl-textarea" id="intake_sourcing_notes" name="sourcing_notes" rows="3"
+                      placeholder="Target companies, channels, diversity mandates, avoid list…"></textarea>
+        </div>
+        <div class="pl-form-group">
+            <label class="pl-label" for="handbook_additional_context">Additional Context</label>
+            <textarea class="pl-textarea pl-textarea--ctx" id="handbook_additional_context" name="additional_context" rows="2"
+                      placeholder="Team structure, client culture, other constraints…"></textarea>
+        </div>
+    </fieldset>
+
+    <fieldset class="intake-section">
+        <legend class="intake-section-title"><span class="intake-num">6</span> Sign-off &amp; SPOC</legend>
+        <div class="row g-3">
+            <div class="col-md-6 pl-form-group">
+                <label class="pl-label" for="intake_am_name">AM Name / SPOC <span class="required-star">*</span></label>
+                <input type="text" class="pl-input" id="intake_am_name" name="am_name" required>
+            </div>
+            <div class="col-md-6 pl-form-group">
+                <label class="pl-label" for="intake_am_email">Email <span class="required-star">*</span></label>
+                <input type="email" class="pl-input" id="intake_am_email" name="am_email" required>
+            </div>
+            <div class="col-md-6 pl-form-group">
+                <label class="pl-label" for="intake_am_phone">Phone <span class="required-star">*</span></label>
+                <input type="tel" class="pl-input" id="intake_am_phone" name="am_phone" required>
+            </div>
+            <div class="col-md-6 pl-form-group">
+                <label class="pl-label" for="intake_date_submitted">Date Submitted <span class="required-star">*</span></label>
+                <input type="date" class="pl-input" id="intake_date_submitted" name="date_submitted" required>
+            </div>
+            <div class="col-md-6 pl-form-group">
+                <label class="pl-label" for="intake_target_start">Target Start Date</label>
+                <input type="date" class="pl-input" id="intake_target_start" name="target_start_date">
+            </div>
+            <div class="col-md-6 pl-form-group">
+                <label class="pl-label" for="intake_approved_by">Approved By (Manager)</label>
+                <input type="text" class="pl-input" id="intake_approved_by" name="approved_by">
+            </div>
+        </div>
+    </fieldset>
+
+    <button type="submit" class="btn-pl blue btn-pl--block mt-2" id="generateHandbookBtn">
+        Generate Handbook <i class="bi bi-stars" aria-hidden="true"></i>
+    </button>
+</form>

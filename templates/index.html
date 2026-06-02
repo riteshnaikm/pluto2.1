@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}PeopleLogic | AI Tools Hub{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hub.css') }}?v={{ asset_v }}">
+{% endblock %}
+
+{% block content_wrapper_class %}container-fluid py-0 px-0{% endblock %}
+
+{% block content %}
+<div class="pluto-hub">
+    <div class="pluto-hub__cards">
+        <a href="{{ url_for('hr_assistant') }}" class="pluto-hub__card pluto-hub__card--blue">
+            <div class="pluto-hub__card-bg"></div>
+            <div class="pluto-hub__card-body">
+                <span class="pluto-hub__icon" aria-hidden="true">🤖</span>
+                <h2 class="pluto-hub__title">Info Buddy</h2>
+                <p class="pluto-hub__desc">Instant answers to HR policies and internal documentation.</p>
+            </div>
+        </a>
+        <a href="{{ url_for('resume_evaluator') }}" class="pluto-hub__card pluto-hub__card--green">
+            <div class="pluto-hub__card-bg"></div>
+            <div class="pluto-hub__card-body">
+                <span class="pluto-hub__icon" aria-hidden="true">📄</span>
+                <h2 class="pluto-hub__title">Recruiter Co-Pilot</h2>
+                <p class="pluto-hub__desc">AI-powered resume evaluation and recruiter handbooks.</p>
+            </div>
+        </a>
+        <a href="{{ url_for('history') }}" class="pluto-hub__card pluto-hub__card--orange">
+            <div class="pluto-hub__card-bg"></div>
+            <div class="pluto-hub__card-body">
+                <span class="pluto-hub__icon" aria-hidden="true">🕐</span>
+                <h2 class="pluto-hub__title">History</h2>
+                <p class="pluto-hub__desc">Continue where you left off — jobs, handbooks, and evaluations.</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="pluto-hub__bubble-column d-flex justify-content-center">
+        <div class="pluto-hub__bubble">
+            {% set greet_name = (session.user.name if session.user and session.user.name else 'there') %}
+            <span id="typing-text">Hello {{ greet_name }}!</span><span class="pluto-hub__caret" aria-hidden="true"></span>
+        </div>
+    </div>
+
+    <div class="pluto-hub__mascot d-flex justify-content-center">
+        <img src="{{ url_for('static', filename='plbot.png') }}" alt="PLUTO mascot" loading="lazy" decoding="async">
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var target = document.getElementById('typing-text');
+    if (!target) return;
+    var base = target.textContent.trim();
+    var suffix = " I'm PLUTO — your AI buddy. Pick a module to get started.";
+    var full = base + suffix;
+    var i = base.length;
+    target.textContent = base;
+
+    function typeWriter() {
+        if (i < full.length) {
+            var slice = full.substring(0, i + 1);
+            target.innerHTML = slice.replace('PLUTO', '<b>PLUTO</b>');
+            i++;
+            setTimeout(typeWriter, 35);
+        }
+    }
+    setTimeout(typeWriter, 600);
+});
+</script>
+{% endblock %}

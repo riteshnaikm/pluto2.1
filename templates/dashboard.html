@@ -1,0 +1,486 @@
+﻿{% extends 'base.html' %}
+
+{% block title %}Analytics Dashboard - HR Assistant{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap">
+            <h2 class="mb-0"><i class="bi bi-graph-up"></i> Analytics Dashboard</h2>
+            <div class="d-flex gap-2 align-items-center">
+                <!-- Auto-refresh Toggle -->
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="auto-refresh-toggle" 
+                           onchange="toggleAutoRefresh()" aria-label="Enable auto-refresh">
+                    <label class="form-check-label" for="auto-refresh-toggle" title="Auto-refresh every 30 seconds">
+                        <i class="bi bi-arrow-clockwise"></i> Auto-refresh
+                    </label>
+                </div>
+                <button type="button" class="btn btn-outline-secondary btn-sm" 
+                        onclick="loadDashboard(false)" title="Refresh now" aria-label="Refresh dashboard">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Improved Filter Layout -->
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-3 col-sm-6">
+                        <label class="form-label small text-muted mb-1" for="team-filter">Team</label>
+                        <select id="team-filter" class="form-select form-select-sm" aria-label="Filter by team">
+                            <option value="">All Teams</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-3 col-sm-6">
+                        <label class="form-label small text-muted mb-1" for="user-filter">User</label>
+                        <select id="user-filter" class="form-select form-select-sm" aria-label="Filter by user">
+                            <option value="">All Users</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2 col-sm-6">
+                        <label class="form-label small text-muted mb-1" for="date-from">From Date</label>
+                        <input type="date" id="date-from" class="form-control form-control-sm" aria-label="Filter from date">
+                    </div>
+                    
+                    <div class="col-md-2 col-sm-6">
+                        <label class="form-label small text-muted mb-1" for="date-to">To Date</label>
+                        <input type="date" id="date-to" class="form-control form-control-sm" aria-label="Filter to date">
+                    </div>
+                    
+                    <div class="col-md-2 col-sm-12">
+                        <label class="form-label small text-muted mb-1 d-block">Quick Range</label>
+                        <div class="btn-group btn-group-sm w-100" role="group">
+                            <button type="button" class="btn btn-outline-primary active" data-days="7">7D</button>
+                            <button type="button" class="btn btn-outline-primary" data-days="30">30D</button>
+                            <button type="button" class="btn btn-outline-primary" data-days="90">90D</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="applyFilters()" aria-label="Apply filters">
+                                <i class="bi bi-funnel"></i> Apply Filters
+                            </button>
+                            <button type="button" class="btn btn-success btn-sm" onclick="downloadCSV()" aria-label="Download CSV">
+                                <i class="bi bi-download"></i> Download CSV
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearFilters()" aria-label="Clear all filters">
+                                <i class="bi bi-x-circle"></i> Clear Filters
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading State with Skeletons -->
+    <div id="dashboard-loading">
+        <!-- Metric Cards Skeletons -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="skeleton-text" style="width: 60%; height: 12px; margin-bottom: 10px;"></div>
+                        <div class="skeleton-text" style="width: 40%; height: 24px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="skeleton-text" style="width: 60%; height: 12px; margin-bottom: 10px;"></div>
+                        <div class="skeleton-text" style="width: 40%; height: 24px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="skeleton-text" style="width: 60%; height: 12px; margin-bottom: 10px;"></div>
+                        <div class="skeleton-text" style="width: 40%; height: 24px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="skeleton-text" style="width: 60%; height: 12px; margin-bottom: 10px;"></div>
+                        <div class="skeleton-text" style="width: 40%; height: 24px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Chart Skeletons -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="skeleton-chart" style="height: 300px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="skeleton-chart" style="height: 250px;"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="skeleton-chart" style="height: 250px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard-content" style="display: none;">
+        <!-- Key Metrics Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card bg-primary bg-gradient text-white shadow-sm hover-lift">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="card-title text-white-50 mb-1">Total Evaluations</h6>
+                                <h2 class="mb-0" id="metric-total-evals">0</h2>
+                                <small class="text-white-50" id="metric-total-evals-trend">
+                                    <i class="bi bi-dash"></i> <span>No change</span>
+                                </small>
+                            </div>
+                            <i class="bi bi-file-earmark-text fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-success bg-gradient text-white shadow-sm hover-lift">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="card-title text-white-50 mb-1">Total Handbooks</h6>
+                                <h2 class="mb-0" id="metric-total-handbooks">0</h2>
+                                <small class="text-white-50" id="metric-total-handbooks-trend">
+                                    <i class="bi bi-dash"></i> <span>No change</span>
+                                </small>
+                            </div>
+                            <i class="bi bi-book fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-info bg-gradient text-white shadow-sm hover-lift">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="card-title text-white-50 mb-1">Active Jobs</h6>
+                                <h2 class="mb-0" id="metric-active-jobs">0</h2>
+                                <small class="text-white-50" id="metric-active-jobs-trend">
+                                    <i class="bi bi-dash"></i> <span>Last 7 days</span>
+                                </small>
+                            </div>
+                            <i class="bi bi-briefcase fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-warning bg-gradient text-white shadow-sm hover-lift">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="flex-grow-1">
+                                <h6 class="card-title text-white-50 mb-1">Avg Match Score</h6>
+                                <h2 class="mb-0"><span id="metric-avg-score">0</span>%</h2>
+                                <small class="text-white-50" id="metric-avg-score-trend">
+                                    <i class="bi bi-dash"></i> <span>No change</span>
+                                </small>
+                            </div>
+                            <i class="bi bi-star fs-1 opacity-50"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Second Row of Metrics -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="card shadow-sm hover-lift">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted mb-1">Total Jobs</h6>
+                        <h3 class="mb-0" id="metric-total-jobs">0</h3>
+                        <small class="text-muted" id="metric-total-jobs-trend">
+                            <i class="bi bi-dash"></i> <span>No change</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm hover-lift">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted mb-1">Conversion Rate</h6>
+                        <h3 class="mb-0"><span id="metric-conversion-rate">0</span>%</h3>
+                        <small class="text-muted" id="metric-conversion-rate-trend">
+                            <i class="bi bi-dash"></i> <span>Handbook â†’ Evals</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm hover-lift">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted mb-1">Avg Evals/Job</h6>
+                        <h3 class="mb-0" id="metric-avg-evals-job">0</h3>
+                        <small class="text-muted" id="metric-avg-evals-job-trend">
+                            <i class="bi bi-dash"></i> <span>No change</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm hover-lift">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted mb-1">Avg Eval Time</h6>
+                        <h3 class="mb-0"><span id="metric-avg-time">0</span>s</h3>
+                        <small class="text-muted" id="metric-avg-time-trend">
+                            <i class="bi bi-dash"></i> <span>No change</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card shadow-sm hover-lift">
+                    <div class="card-body text-center">
+                        <h6 class="card-title text-muted mb-1">Avg Handbook Time</h6>
+                        <h3 class="mb-0"><span id="metric-avg-handbook-time">0</span>s</h3>
+                        <small class="text-muted" id="metric-avg-handbook-time-trend">
+                            <i class="bi bi-dash"></i> <span>No change</span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Activity Timeline Chart -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-activity"></i> Activity Timeline</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="activityChart" height="80"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- New Charts Row -->
+        <div class="row mb-4">
+            <!-- Team Performance Comparison -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-people"></i> Team Performance</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="teamPerformanceChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Match Score Distribution -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Match Score Distribution</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="scoreDistributionChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- User Activity and Top Performers Row -->
+        <div class="row mb-4">
+            <!-- User Activity Breakdown -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-person-circle"></i> User Activity Breakdown</h5>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="userActivityChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Performers Table -->
+            <div class="col-md-6">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-trophy-fill"></i> Top Performers</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>User</th>
+                                        <th>Evaluations</th>
+                                        <th>Handbooks</th>
+                                        <th>Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-performers-body">
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Activity Feed and Quick Stats Row -->
+        <div class="row mb-4">
+            <!-- Recent Activity Feed -->
+            <div class="col-md-8">
+                <div class="card shadow-sm">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-clock-history"></i> Recent Activity</h5>
+                        <small class="text-muted">Last 20 activities</small>
+                    </div>
+                    <div class="card-body" style="max-height: 500px; overflow-y: auto;">
+                        <div id="recent-activity-feed">
+                            <div class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                <p class="text-muted mt-2 mb-0">Loading activities...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Stats Summary -->
+            <div class="col-md-4">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-speedometer2"></i> Quick Stats</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="quick-stats-summary">
+                            <div class="text-center py-3">
+                                <div class="spinner-border spinner-border-sm text-primary"></div>
+                                <p class="text-muted mt-2 mb-0">Loading...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Trends Row -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-graph-up-arrow"></i> Performance Trends</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3" id="performance-trends">
+                            <div class="col-md-3">
+                                <div class="text-center p-3 border rounded">
+                                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 border rounded">
+                                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 border rounded">
+                                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="text-center p-3 border rounded">
+                                    <div class="spinner-border spinner-border-sm text-primary"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Jobs Table -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-trophy"></i> Top Jobs by Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Job ID</th>
+                                        <th>Job Title</th>
+                                        <th>Evaluations</th>
+                                        <th>Avg Score</th>
+                                        <th>Last Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="top-jobs-body">
+                                    <tr>
+                                        <td colspan="6" class="text-center text-muted">Loading...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block head_extra %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v={{ asset_v }}">
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" defer></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}?v={{ asset_v }}" defer></script>
+{% endblock %}

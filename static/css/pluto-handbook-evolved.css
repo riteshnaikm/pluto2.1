@@ -1,0 +1,104 @@
+/**
+ * Recruiter Handbook evolved workspace — PLUTO brand (#0d6fae, #7d8e2c, #f6c206, #e26014).
+ * Loaded after base copilot / handbook rules; scoped to handbook + copilot layout.
+ */
+
+.copilot-page {
+    max-width: 1820px;
+    margin-inline: auto;
+}
+
+.copilot-page .copilot-layout {
+    grid-template-columns: minmax(260px, 300px) minmax(720px, 1fr) minmax(200px, 240px);
+}
+
+#handbook-result-section .ce-shell {
+    --fg-main: var(--pl-text-primary);
+    --fg-muted: var(--pl-text-secondary);
+    font-size: 17px;
+}
+
+#handbook-result-section .ce-main-workspace {
+    max-width: min(1220px, 100%);
+    width: 100%;
+    margin-inline: auto;
+}
+
+#handbook-result-section .ce-card .recruiter-handbook-content,
+#handbook-result-section .ce-tile-body {
+    font-size: 16px;
+    line-height: 1.68;
+}
+
+#handbook-result-section .ce-dashboard-ai-bullets li,
+#handbook-result-section .ce-job-meta {
+    font-size: 15px;
+    color: var(--fg-muted);
+}
+
+#handbook-result-section .hb-workflow-rail {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-ui, #e5e7eb);
+    background: color-mix(in oklch, var(--surface, #fff) 96%, var(--p-blue-soft, #e8f4fc) 8%);
+}
+
+#handbook-result-section .hb-workflow-rail .btn-primary {
+    background: #0d6fae;
+    border-color: #0d6fae;
+}
+
+#handbook-result-section .hb-boolean-console {
+    margin-top: 6px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: var(--pl-text-primary);
+    color: var(--pl-white);
+    border: 1px solid var(--pl-border);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.45;
+    overflow-x: auto;
+}
+
+#handbook-result-section .hb-boolean-console .ce-boolean-query {
+    color: inherit;
+    font-weight: 600;
+}
+
+#handbook-result-section details.ce-tile.ce-tile--risk {
+    border-color: color-mix(in oklch, #e26014 35%, var(--border-ui, #e5e7eb));
+}
+
+#handbook-result-section details.ce-tile.ce-tile--boolean {
+    border-color: color-mix(in oklch, #f6c206 45%, var(--border-ui, #e5e7eb));
+}
+
+#handbook-result-section details.ce-tile.ce-tile--pools {
+    border-color: color-mix(in oklch, #0d6fae 28%, var(--border-ui, #e5e7eb));
+}
+
+#handbook-result-section details.ce-tile.ce-tile--screening {
+    border-color: color-mix(in oklch, #7d8e2c 32%, var(--border-ui, #e5e7eb));
+}
+
+@media (max-width: 1100px) {
+    .copilot-page .copilot-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+html[data-theme="dark"] #handbook-result-section .ce-shell {
+    --fg-main: var(--pl-text-primary);
+    --fg-muted: var(--pl-text-secondary);
+}
+
+html[data-theme="dark"] #handbook-result-section .hb-workflow-rail {
+    background: color-mix(in srgb, var(--pl-surface) 55%, var(--pl-primary-light));
+    border-color: var(--pl-border);
+}

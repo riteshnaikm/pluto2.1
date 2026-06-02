@@ -1,0 +1,24 @@
+.env
+.env.*
+!.env.example
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+combined_db.db
+uploads/*
+!uploads/.gitkeep
+*.log
+.DS_Store
+.idea/
+.vscode/
+*.db-journal
+__pycache__/
+mp43*
+index2.html.backup
+templates/index copy.html
+
+.claude/
+
+SERVER DETAILS.txt

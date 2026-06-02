@@ -1,0 +1,209 @@
+/**
+ * Bootstrap + PLUTO component overrides — brand palette only.
+ */
+
+/* Primary actions */
+.btn-primary {
+  background-color: var(--pl-primary);
+  border-color: var(--pl-primary);
+}
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: var(--pl-primary-dark);
+  border-color: var(--pl-primary-dark);
+}
+
+.btn-success {
+  background-color: var(--pl-olive);
+  border-color: var(--pl-olive);
+}
+.btn-success:hover {
+  background-color: var(--pl-olive-dark);
+  border-color: var(--pl-olive-dark);
+}
+
+.btn-warning {
+  background-color: var(--pl-yellow);
+  border-color: var(--pl-yellow);
+  color: var(--pl-text-primary);
+}
+.btn-warning:hover {
+  background-color: var(--pl-yellow-dark);
+  border-color: var(--pl-yellow-dark);
+  color: var(--pl-text-primary);
+}
+
+.btn-danger {
+  background-color: var(--pl-orange);
+  border-color: var(--pl-orange);
+}
+.btn-danger:hover {
+  background-color: var(--pl-orange-dark);
+  border-color: var(--pl-orange-dark);
+}
+
+.btn-outline-primary {
+  color: var(--pl-primary);
+  border-color: var(--pl-primary);
+}
+.btn-outline-primary:hover {
+  background-color: var(--pl-primary);
+  border-color: var(--pl-primary);
+  color: var(--pl-white);
+}
+
+.badge.bg-success,
+.bg-success {
+  background-color: var(--pl-olive) !important;
+}
+.badge.bg-warning,
+.bg-warning {
+  background-color: var(--pl-yellow) !important;
+  color: var(--pl-text-primary) !important;
+}
+.badge.bg-danger,
+.bg-danger {
+  background-color: var(--pl-orange) !important;
+}
+.badge.bg-primary,
+.bg-primary {
+  background-color: var(--pl-primary) !important;
+}
+.badge.bg-info,
+.bg-info {
+  background-color: var(--pl-primary) !important;
+}
+
+.text-primary {
+  color: var(--pl-primary) !important;
+}
+.text-success {
+  color: var(--pl-olive) !important;
+}
+.text-warning {
+  color: var(--pl-yellow-dark) !important;
+}
+.text-danger {
+  color: var(--pl-orange) !important;
+}
+.text-info {
+  color: var(--pl-primary) !important;
+}
+
+.border-primary {
+  border-color: var(--pl-primary) !important;
+}
+
+.progress-bar {
+  background-color: var(--pl-primary);
+}
+.progress-bar.match-tier-strong {
+  background-color: var(--pl-olive);
+}
+.progress-bar.match-tier-moderate {
+  background-color: var(--pl-yellow);
+}
+.progress-bar.match-tier-weak {
+  background-color: var(--pl-orange);
+}
+
+.alert-success {
+  background-color: var(--pl-olive-light);
+  border-color: var(--pl-olive);
+  color: var(--pl-text-primary);
+}
+.alert-danger {
+  background-color: var(--pl-orange-light);
+  border-color: var(--pl-orange);
+  color: var(--pl-text-primary);
+}
+.alert-warning {
+  background-color: var(--pl-yellow-light);
+  border-color: var(--pl-yellow);
+  color: var(--pl-text-primary);
+}
+.alert-info {
+  background-color: var(--pl-primary-light);
+  border-color: var(--pl-primary);
+  color: var(--pl-text-primary);
+}
+
+/* Nav / sidebar active */
+.nav-link.active,
+.sidebar .sidebar-item.active,
+.sidebar-item.active {
+  background-color: var(--pl-primary-light);
+  color: var(--pl-primary);
+  border-left: 3px solid var(--pl-primary);
+}
+
+/* Focus & links */
+*:focus-visible {
+  outline: 2px solid var(--pl-primary);
+  outline-offset: 2px;
+}
+
+a {
+  color: var(--pl-primary);
+}
+a:hover {
+  color: var(--pl-primary-dark);
+}
+
+/* Match score dial — tier colours (set via JS data-match-tier) */
+.copilot-page .score-dial {
+  --score-accent: var(--pl-olive);
+}
+.copilot-page .score-dial[data-match-tier="strong"] {
+  --score-accent: var(--pl-olive);
+}
+.copilot-page .score-dial[data-match-tier="moderate"] {
+  --score-accent: var(--pl-yellow);
+}
+.copilot-page .score-dial[data-match-tier="weak"] {
+  --score-accent: var(--pl-orange);
+}
+.copilot-page .score-dial[data-match-tier="exceptional"] {
+  --score-accent: var(--pl-olive);
+}
+
+.copilot-page .score-dial {
+  background: conic-gradient(
+    var(--score-accent) calc(var(--score, 0) * 1%),
+    color-mix(in srgb, var(--pl-border) 80%, transparent) 0
+  );
+}
+.copilot-page .score-dial .score-text,
+.copilot-page .score-dial[data-match-tier] .score-text {
+  color: var(--score-accent);
+}
+.copilot-page .score-verdict {
+  color: var(--score-accent, var(--pl-olive));
+}
+
+/* Star ratings */
+.handbook-star-rating .star.selected,
+.copilot-page .handbook-star-rating .star.selected {
+  color: var(--pl-yellow);
+}
+
+/* AI thinking / loading shimmer */
+@keyframes pluto-yellow-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+.pluto-ai-shimmer,
+.handbook-loader-progress .progress-bar {
+  background: linear-gradient(
+    90deg,
+    var(--pl-yellow-light) 0%,
+    color-mix(in srgb, var(--pl-yellow) 30%, transparent) 50%,
+    var(--pl-yellow-light) 100%
+  );
+  background-size: 200% 100%;
+  animation: pluto-yellow-shimmer 1.4s ease-in-out infinite;
+}
