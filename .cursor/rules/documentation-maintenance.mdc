@@ -1,0 +1,51 @@
+---
+description: Keep docs/ in sync with code; ask user when doc scope is unclear
+alwaysApply: true
+---
+
+# Documentation maintenance (PLUTO)
+
+All project documentation lives under **`docs/`**. Index: `docs/README.md`. Primary handoff: **`docs/product/PRODUCT_CONTEXT.md`**.
+
+## When to update docs
+
+After any change that affects behaviour, routes, schema, env vars, deploy, integrations, or UI conventions — **update every affected doc in the same task**, not only code.
+
+| Change type | Update at minimum |
+|-------------|-------------------|
+| New/changed API or external integration | `docs/integrations/` + `PRODUCT_CONTEXT.md` API section |
+| VoxPro / telephony | `docs/integrations/VOXPRO_API.md` |
+| Deploy, git push, server access | `docs/deployment/` |
+| `.env` / models / providers | `docs/guides/ENV_AND_MODELS.md`, `MODEL_SWITCHING_GUIDE.md`, `.env.example` |
+| Brand / CSS / match-score colours | `docs/design/BRAND_COLOR_AUDIT.md` |
+| Architecture shift | `docs/architecture/HLD.md` (+ LLD if schema changes) |
+| Product flows, routes, DB columns | `docs/product/PRODUCT_CONTEXT.md`, often `PRODUCT_DETAILS.md` |
+| Repo layout / folder moves | `docs/README.md`, root `README.md`, `PRODUCT_CONTEXT.md` §3 |
+
+**Do not edit `docs/archive/`** unless intentionally archiving historical material.
+
+## Ask the user first
+
+Pause and **ask** before large or ambiguous doc work:
+
+- New feature with unclear doc scope
+- Contradiction between docs and code (which is authoritative?)
+- Rewriting HLD/LLD vs only PRODUCT_CONTEXT
+- Whether user wants docs-only vs code + docs in one PR
+
+For **small, obvious** fixes (e.g. confirmed API field rule, renamed path), update docs without asking.
+
+## Workflow checklist
+
+1. Implement or discover the change in code.
+2. List which doc files are affected (use table above).
+3. Update them in the same session; fix cross-links and stale paths.
+4. If adding scripts (e.g. `scripts/test_voxpro_flow.py`), mention them in the relevant integration or deployment doc.
+5. Do not claim docs are current without editing the files when behaviour changed.
+
+## Trust order
+
+1. `docs/product/PRODUCT_CONTEXT.md` — highest for routes/schema/landmines  
+2. `docs/integrations/*` — external API contracts  
+3. `docs/architecture/*` — overview; may lag — refresh when asked or when outdated sections are touched  
+4. `docs/archive/*` — historical only

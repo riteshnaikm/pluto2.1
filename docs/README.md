@@ -4,6 +4,23 @@ All project documentation lives under `docs/`. Application code stays at the rep
 
 **Last doc review:** May 2026 (aligned with repo reorganisation, batch eval, brand tokens, Hypercorn deploy).
 
+## Documentation maintenance (team rule)
+
+Enforced in all Cursor chats via `.cursor/rules/documentation-maintenance.mdc` (`alwaysApply: true`).
+
+When code, APIs, or behaviour change:
+
+1. **Update all affected docs** in `docs/` (not only `PRODUCT_CONTEXT.md`). Typical mapping:
+   - API / integrations → `docs/integrations/`
+   - Deploy / git → `docs/deployment/`
+   - Env / models → `docs/guides/`
+   - UI / brand → `docs/design/`
+   - Architecture overview → `docs/architecture/` (if behaviour shifts)
+   - Product flows / routes / schema → `docs/product/PRODUCT_CONTEXT.md`
+2. **Ask the user before large doc edits** if scope is unclear (new feature vs tweak, or which doc is authoritative).
+3. **Do not edit `docs/archive/`** unless archiving something intentionally historical.
+4. After VoxPro or similar integration work, update `docs/integrations/VOXPRO_API.md` and cross-links in `PRODUCT_CONTEXT.md`.
+
 | Doc type | Trust level |
 |----------|-------------|
 | [product/PRODUCT_CONTEXT.md](product/PRODUCT_CONTEXT.md) | **Highest** — routes, schema, landmines |
