@@ -14,11 +14,13 @@ uploads/*
 .idea/
 .vscode/
 *.db-journal
-__pycache__/
 mp43*
 index2.html.backup
 templates/index copy.html
-
+API_KEYS_SETUP.txt
+SERVER DETAILS.txt
 .claude/
 
-SERVER DETAILS.txt
+# Duplicate assets (keep canonical files in static/)
+/static/logo.png
+/static/peoplelogic-logo.png

@@ -28,7 +28,7 @@
 
 **Intentional exception:** Google sign-in SVG in `login.html` keeps official Google brand colours (`#4285F4`, etc.) — not PLUTO UI.
 
-**Legacy / unused:** `templates/index2.html.backup`, `templates/base2.html` — not linked in routes; left unchanged.
+**Legacy / unused:** `base2.html` and `index2.html.backup` were removed in repo cleanup (2026).
 
 ---
 
@@ -138,7 +138,7 @@ Doughnuts: bucket colours only from the four brand RGBA values.
 ## Remaining optional cleanup
 
 - Consolidate duplicate `:root` in `pluto-handbook-result.css` (OD export artifact) when that file is next regenerated from Open Design.
-- Remove or archive `index2.html.backup` / `base2.html` if no longer needed.
+- Stale template backups removed during docs reorganisation.
 - Audit inline `style=` attributes in long handbook HTML strings inside JS if any hex sneaks in at runtime.
 
 *Last updated: brand enforcement pass — May 2026.*

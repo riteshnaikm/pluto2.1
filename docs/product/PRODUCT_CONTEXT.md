@@ -60,50 +60,37 @@ Two supporting screens:
 
 ```
 pluto2-main/
-├── app.py                       # Monolith. 8,552 lines. Everything lives here.
-├── run.py                       # Hypercorn entrypoint; calls init/build/setup then serve().
+├── README.md                    # Quick start → points to docs/
+├── app.py                       # Monolith. Most routes and LLM logic.
+├── run.py                       # Hypercorn entrypoint
 ├── run_production.py            # Alt prod entrypoint
-├── migrate_database.py          # Unused. Real schema migration is inline in init_db()
 ├── verify_before_deploy.py      # Pre-deploy sanity checks
-├── requirements.txt             # Loose pins (no versions on most deps)
-├── combined_db.db               # SQLite — 8 tables (see §5). NEVER commit; no .gitignore exists!
-├── .env                         # API keys (Pinecone, Groq, Gemini, OpenAI, Google OAuth, Flask secret)
-├── API_KEYS_SETUP.txt           # ⚠ Plaintext API keys, including stale ones. Remove from repo.
+├── requirements.txt
+├── .env / .env.example          # Secrets (never commit .env)
+├── combined_db.db               # SQLite — NEVER commit
 │
-├── templates/                   # Jinja2 — 14 files
-│   ├── base.html                # Master layout (navbar, sidebar, theme toggle, user menu)
-│   ├── base2.html               # Stale duplicate
-│   ├── login.html               # Google sign-in screen
-│   ├── index.html               # Landing page (tool cards + PLUTO mascot)
-│   ├── index1.html              # Info Buddy UI
-│   ├── index2.html              # Recruiter Co-Pilot (Handbook + MatchMaker in one page)
-│   ├── index copy.html          # ⚠ Stale
-│   ├── index2.html.backup       # ⚠ Stale
-│   ├── admin.html               # User/role/team management
-│   ├── dashboard.html           # Analytics dashboard (Chart.js)
-│   ├── history.html             # Past evaluations & handbooks
-│   ├── feedback_history.html    # Feedback log
-│   ├── evaluation_view.html     # Single-evaluation view
-│   └── test_tabs.html           # Dev fixture
+├── docs/                        # All documentation (see docs/README.md)
+│   ├── product/                 # PRODUCT_CONTEXT.md, PRODUCT_DETAILS.md
+│   ├── architecture/            # HLD.md, LLD.md
+│   ├── integrations/            # VOXPRO_API.md
+│   ├── design/                  # BRAND_COLOR_AUDIT.md
+│   ├── deployment/              # DEPLOYMENT.md, GIT_PUSH_INSTRUCTIONS.md
+│   ├── guides/                  # ENV_AND_MODELS.md, MODEL_SWITCHING_GUIDE.md, …
+│   ├── changelog/               # SPRINT_ABC_CHANGELOG.md
+│   ├── archive/                 # Roadmap, evaluations, backlog, old scripts
+│   └── prompts/                 # JD / resume prompt experiments (reference only)
 │
-├── static/
-│   ├── css/                     # 3 files (style.css, pluto-handbook-result.css, pluto-handbook-evolved.css)
-│   ├── js/                      # 5 files. resume-evaluator.js is 178 KB / 3,442 lines.
-│   ├── logo.png                 # 1.8 MB — duplicated as peoplelogic.png, peoplelogic-logo.png
-│   └── plbot.png / plbot_right_faced.png  # PLUTO mascot images
-│
-├── HR_docs/                     # PDF policies. RAG corpus — indexed into Pinecone + BM25 at startup.
-├── uploads/                     # Resumes uploaded by recruiters. NOT auto-cleaned.
-├── JD_Modified_prompt/          # Prompt templates / experiments
-├── docs/                        # HLD.md + LLD.md (out-of-date but useful as overview)
-├── deploy_scripts/              # Deploy helpers
-├── venv/                        # Python virtualenv (should not be committed)
-└── __pycache__/                 # (should not be committed)
+├── pluto/                       # Blueprints, routes, helpers
+├── templates/                   # Jinja2 UI (extends base.html)
+├── static/                      # css/, js/, plbot*.png, peoplelogic-logo-300x77.png
+├── HR_docs/                     # RAG policy PDFs
+├── uploads/                     # Uploaded resumes
+├── scripts/                     # Maintenance utilities
+└── deploy_scripts/              # Production setup
 ```
 
-**Stale files to ignore / delete**: `$null`, `mp43*-*.{html,js,png}`, `index2.html.backup`,
-`index copy.html`, `base2.html`, `index.html` at root (the *root-level* one is a 1-byte file —
-the real one is in `templates/`).
+**Removed in repo cleanup (2026):** `base2.html`, `index2.html.backup`, root stray `index2.html`,
+duplicate logos, `API_KEYS_SETUP.txt`, `SERVER DETAILS.txt`, `JD_Modified_prompt/` (→ `docs/prompts/`).
 
 ---
 
@@ -400,6 +387,7 @@ falls back to canned defaults (`get_default_resume_evaluation`,
 | **Recruiter Handbook** | LLM-generated markdown briefing for a job. |
 | **MatchMaker** | Resume-vs-JD evaluator. |
 | **Oorwin** | The external ATS PeopleLogic uses; we fetch JDs by `oorwin_job_id`. |
+| **VoxPro** | Internal telephony (call logs + WAV recordings). API contract: `docs/integrations/VOXPRO_API.md`. |
 | **QUICK_CHECKS** | Hard-coded list of 10 standard recruiter screening questions. |
 | **ACRONYM_MAP** | Expands HR acronyms (wfh, pto, posh, prep, etc.) before RAG retrieval. |
 | **PREP** | Performance Review & Enhancement Program — an HR policy. |
@@ -418,7 +406,7 @@ These are factual observations from a code review — flag any change against th
 1. **`app.py` is a 8,552-line / 396 KB monolith** with 54 routes and 112 functions.
    Splitting into Flask blueprints + `services/` is the single highest-leverage refactor.
 2. **No `.gitignore`**. `combined_db.db`, `uploads/`, `venv/`, `__pycache__/`, `.env`
-   are all at risk of being committed. `API_KEYS_SETUP.txt` already contains *real*
+   are all at risk of being committed. Never add plaintext key files (legacy `API_KEYS_SETUP.txt` was removed).
    plaintext API keys — rotate and remove immediately.
 3. **Default insecure secret**: `SECRET_KEY = "your-secret-key-change-in-production-12345"`
    if env var is missing. Production must set `FLASK_SECRET_KEY`.
@@ -442,10 +430,7 @@ These are factual observations from a code review — flag any change against th
     `<style>` before the markup. Migrate to `static/css/`.
 11. **`static/js/resume-evaluator.js` is 3,442 lines / 178 KB**, written in vanilla
     JS DOM mutations. Break into modules; consider Alpine.js or a small build step.
-12. **Stale duplicate files** (delete after confirming): `templates/index copy.html`,
-    `templates/index2.html.backup`, `templates/base2.html`, root-level `mp43*-*.{html,js,png}`,
-    `$null`, `index2.html` at repo root (the 1-byte one), duplicate 1.8 MB logo
-    images (`logo.png` == `peoplelogic.png` == `peoplelogic-logo.png`).
+12. **Stale duplicates** — largely cleaned up (2026); avoid re-adding backup templates or duplicate multi‑MB logos in `static/`.
 13. **CDN-served Bootstrap / Marked / DOMPurify / Chart.js** on every page —
     works but means the app is unusable offline and is subject to CDN availability.
 14. **`uploads/` is never cleaned** — resumes accumulate forever. Add a retention job.
@@ -495,7 +480,7 @@ memory, initialize the LLM chain, and seed the admin user.
 ## 14. What "good" looks like for this product going forward
 
 Short list, prioritized:
-1. **Lock the repo down** — add `.gitignore`, remove `API_KEYS_SETUP.txt`, rotate keys,
+1. **Lock the repo down** — keep `.gitignore` current, rotate any keys ever committed in plaintext files,
    set a real `FLASK_SECRET_KEY`, enable Flask-Talisman + CSRF.
 2. **Break up `app.py`** into Flask blueprints: `auth/`, `evaluator/`, `handbook/`,
    `assistant/`, `analytics/`, `admin/`, `pdf/`, with a `services/` layer for LLM,

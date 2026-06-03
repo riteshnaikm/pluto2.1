@@ -436,7 +436,7 @@ Info Buddy Q&A log: question, retrieved_docs, final_answer.
 
 ## 11. Configuration (Environment Variables)
 
-Key variables in `.env` (see `API_KEYS_SETUP.txt`, `MODEL_SWITCHING_GUIDE.md`):
+Key variables in `.env` (see `.env.example`, `docs/guides/ENV_AND_MODELS.md`, `docs/guides/MODEL_SWITCHING_GUIDE.md`):
 
 ```bash
 # Required
@@ -517,7 +517,7 @@ pluto2-main/
 - **Local (Windows):** `python run.py` → `http://127.0.0.1:5000`
 - **Production (Linux):** binds `0.0.0.0:5000`
 - Server: **Hypercorn** (async ASGI wrapper over sync Flask)
-- Docs: `DEPLOYMENT.md`, `deploy_scripts/`
+- Docs: `docs/deployment/DEPLOYMENT.md`, `deploy_scripts/`
 - HTTPS: Currently disabled (HTTP only per `run.py` comments)
 
 **External services required at runtime:**
@@ -594,11 +594,11 @@ pluto2-main/
 - New LLM calls → use `generate_content_unified()` with appropriate provider override
 
 **If asked about deployment:**
-- See `run.py`, `DEPLOYMENT.md`, `requirements.txt`
+- See `run.py`, `docs/deployment/DEPLOYMENT.md`, `requirements.txt`
 - Index HR PDFs: startup builds BM25 + Pinecone from `HR_docs/`
 
 **If asked about models:**
-- See `MODEL_SWITCHING_GUIDE.md`, `GROQ_IMPLEMENTATION_SUMMARY.md`
+- See `docs/guides/MODEL_SWITCHING_GUIDE.md`, `docs/archive/IMPLEMENTATION_NOTES.md`
 - Each feature can use different provider via env vars
 
 ---

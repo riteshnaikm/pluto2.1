@@ -101,8 +101,8 @@ def main():
     
     print("\n📄 Key Template Files:")
     check_file("templates/base.html", required=True)
-    check_file("templates/base2.html", required=True)
     check_file("templates/index2.html", required=True)
+    check_file("docs/product/PRODUCT_CONTEXT.md", required=False)
     check_file("templates/feedback_history.html", required=True)
     
     print("\n🎨 Static Assets:")
