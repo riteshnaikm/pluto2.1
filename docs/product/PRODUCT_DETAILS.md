@@ -481,33 +481,24 @@ pluto2-main/
 ├── requirements.txt          # Python dependencies
 ├── .env                      # Secrets (DO NOT COMMIT)
 │
-├── templates/                # Jinja2 HTML
-│   ├── base.html             # Layout: navbar, sidebar, theme, profile
-│   ├── index.html            # Home hub (standalone)
-│   ├── index1.html           # Info Buddy
-│   ├── index2.html           # Recruiter Co-Pilot (~1500 lines)
-│   ├── dashboard.html        # Analytics (~1700 lines)
-│   ├── history.html
-│   ├── login.html
-│   └── admin.html
+├── templates/
+│   ├── base.html, login.html, index.html (hub)
+│   ├── index1.html (Info Buddy), index2.html (Co-Pilot)
+│   ├── dashboard.html, history.html, feedback_history.html
+│   ├── evaluation_view.html, admin.html
+│   └── partials/             # handbook + matchmaker intake forms
 │
 ├── static/
-│   ├── css/                  # style.css, pluto-handbook-*.css
-│   ├── js/
-│   │   ├── resume-evaluator.js   # Main copilot logic (~3400 lines)
-│   │   ├── pluto-handbook-result.js
-│   │   └── pluto-handbook-ui.js
-│   └── *.png                 # Logos, PLUTO mascot
+│   ├── css/                  # brand-tokens, copilot, history, batch-comparison, …
+│   └── js/                   # resume-evaluator.js, handbook-stream.js, history.js, …
 │
+├── docs/                     # All documentation — see docs/README.md
 ├── HR_docs/                  # HR policy PDFs (indexed to Pinecone)
 ├── uploads/                  # Uploaded resumes
-├── docs/
-│   ├── HLD.md                # High-level design
-│   └── LLD.md                # Low-level design
-│
-├── deploy_scripts/           # Deployment helpers
-├── migrate_database.py       # DB migration script
-└── verify_before_deploy.py   # Pre-deploy checks
+├── pluto/                    # Blueprints, routes, helpers
+├── scripts/                  # cleanup_uploads.py, etc.
+├── deploy_scripts/
+└── verify_before_deploy.py
 ```
 
 ---
@@ -545,8 +536,8 @@ pluto2-main/
 |------|--------|
 | Authentication | Google OAuth + Flask sessions |
 | Authorization | Role + team-based filtering |
-| CSRF | **Not implemented** on forms/APIs |
-| Rate limiting | LLM provider rate limits only; no app-level limiter |
+| CSRF | Flask-WTF CSRFProtect (`pluto/extensions.py`); not all clients may send token yet |
+| Rate limiting | Flask-Limiter on selected hot endpoints |
 | File uploads | Extension whitelist (pdf, doc, docx); `secure_filename` |
 | Secrets | `.env` file (must not be committed) |
 | Error responses | Some analytics endpoints return full traceback in JSON (500) |
@@ -559,12 +550,12 @@ pluto2-main/
 1. **Monolithic `app.py`** — 54 routes, 112+ functions, hard to test and maintain
 2. **SQLite** — not ideal for concurrent multi-user production; docs mention PostgreSQL migration
 3. **No frontend framework** — large inline CSS/JS in templates; `resume-evaluator.js` is 3400+ lines
-4. **Duplicate templates** — `index copy.html`, `index2.html.backup`, multiple `index*.html` variants
-5. **Heavy assets in repo** — multiple 1.8MB PNG logos, screenshot artifacts (`mp43*.png/html`)
+4. **Template/CSS split** — some legacy inline styles remain in large templates
+5. **Assets** — keep one logo variant; duplicate multi-MB PNGs were removed in 2026 cleanup
 6. **Synchronous DB** — new `sqlite3.connect()` per request (54+ connection sites)
 7. **Mixed async/sync** — some routes `async def` on Flask (works via ASGI but unconventional)
-8. **Incomplete route protection** — some endpoints (e.g. `/api/ask`, `/feedback_history`) lack `@login_required`
-9. **Documentation drift** — HLD mentions only Gemini; codebase supports 3+ providers
+8. **Route protection** — verify `@login_required` on any new endpoint
+9. **Documentation** — use `docs/product/PRODUCT_CONTEXT.md` as source of truth; HLD/LLD are overviews
 
 ---
 

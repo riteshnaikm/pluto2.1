@@ -1,105 +1,105 @@
-# HR Assistant Suite - High-Level Design (HLD)
+# PLUTO — High-Level Design (HLD)
 
-## 1. System Overview
+> **Status:** Overview document. For accurate routes, schema, and landmines use **[../product/PRODUCT_CONTEXT.md](../product/PRODUCT_CONTEXT.md)**.  
+> **Last reviewed:** May 2026
 
-The HR Assistant Suite is a comprehensive web application designed to streamline HR processes, particularly resume evaluation and interview preparation. The system leverages AI to analyze resumes, generate interview questions, and provide insights to HR professionals.
+## 1. System overview
+
+**PLUTO** (HR Assistant Suite) is an internal PeopleLogic web app for:
+
+- **Info Buddy** — RAG chat over HR policy PDFs (`HR_docs/`)
+- **Recruiter Co-Pilot** — Recruiter Handbook + MatchMaker (resume vs JD)
+- **Job History** — Past handbooks and evaluations (job-centric)
+- **Analytics Dashboard** — Usage KPIs and CSV export
+- **Admin** — Roles and teams
+
+Auth: Google OAuth. Data: SQLite (`combined_db.db`). Server: **Hypercorn** + Flask ASGI (`run.py`).
 
 ## 2. Architecture
 
-### 2.1 System Architecture
+### 2.1 Layers
 
-The application follows a three-tier architecture:
-- **Presentation Layer**: Flask web application with HTML/CSS/JavaScript frontend
-- **Application Layer**: Python backend with AI processing capabilities
-- **Data Layer**: SQLite database for persistent storage
+| Layer | Technology |
+|-------|------------|
+| Presentation | Jinja2 templates, Bootstrap 5, vanilla JS (`static/js/`) |
+| Application | Flask (`app.py`) + `pluto/` blueprints |
+| AI / retrieval | Gemini / Groq / OpenAI (unified generator), Pinecone + BM25 |
+| Data | SQLite, file uploads in `uploads/` |
 
-### 2.2 Component Diagram
+### 2.2 Component diagram
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Client Browser                           │
-└───────────────────────────────┬─────────────────────────────────┘
-                                │
-┌───────────────────────────────▼─────────────────────────────────┐
-│                        Flask Web Server                         │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
-│  │  Resume Evaluator│  │  HR Assistant   │  │  History Viewer │  │
-│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘  │
-└───────────┼─────────────────────┼─────────────────────┼─────────┘
-            │                     │                     │
-┌───────────▼─────────────────────▼─────────────────────▼─────────┐
-│                       AI Processing Layer                        │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
-│  │ Resume Analysis │  │Question Generator│  │ Data Extraction │  │
-│  └────────┬────────┘  └────────┬────────┘  └────────┬────────┘  │
-└───────────┼─────────────────────┼─────────────────────┼─────────┘
-            │                     │                     │
-┌───────────▼─────────────────────▼─────────────────────▼─────────┐
-│                         Database Layer                           │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  │
-│  │   Evaluations   │  │Interview Questions│  │   QA History    │  │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘  │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                     Browser (Bootstrap 5)                    │
+│  Hub │ Info Buddy │ Co-Pilot │ History │ Dashboard │ Admin   │
+└────────────────────────────┬────────────────────────────────┘
+                             │ HTTP(S)
+┌────────────────────────────▼────────────────────────────────┐
+│              Hypercorn → WsgiToAsgi(Flask app)               │
+│  OAuth │ CSRF (partial) │ Rate limits │ Page + API routes    │
+└─────┬──────────────────────┬────────────────────────────────┘
+      │                      │
+┌─────▼──────┐    ┌──────────▼──────────────────────────────┐
+│ SQLite     │    │ LLM + RAG                                    │
+│ evaluations│    │  • MatchMaker / Handbook / Info Buddy        │
+│ handbooks  │    │  • Pinecone + BM25 + embeddings              │
+│ qa_history │    │  • ReportLab PDFs                            │
+└────────────┘    └──────────┬──────────────────────────────────┘
+                             │
+              ┌──────────────┼──────────────┐
+              │ Oorwin ATS   │ VoxPro (API  │
+              │ (job JD)     │  documented; │
+              │              │  not in app) │
+              └──────────────┴──────────────┘
 ```
 
-### 2.3 Key Components
+### 2.3 Key components
 
-1. **Resume Evaluator**: Analyzes resumes against job descriptions, providing match scores and insights
-2. **HR Assistant**: Provides AI-powered assistance for HR-related queries
-3. **History Viewer**: Displays past evaluations and their details
-4. **AI Processing Layer**: Handles all AI-related tasks using Google's Gemini model
-5. **Database**: Stores evaluations, interview questions, and interaction history
+| Component | Responsibility |
+|-----------|----------------|
+| MatchMaker | Resume vs JD; stream (`/evaluate-stream`) or batch (`/evaluate-batch`) |
+| Recruiter Handbook | JD → markdown handbook; SSE stream primary |
+| Info Buddy | `/api/ask` hybrid retrieval + LLM answer |
+| History | `/history` + `/api/job-centric-history` |
+| Analytics | Dashboard charts + export |
+| VoxPro (planned) | Call logs + recordings — see [../integrations/VOXPRO_API.md](../integrations/VOXPRO_API.md) |
 
-## 3. Data Flow
+## 3. Data flows (summary)
 
-### 3.1 Resume Evaluation Flow
+### Resume evaluation (single)
 
-1. User uploads resume and provides job details
-2. System extracts text from resume
-3. AI analyzes resume against job requirements
-4. System calculates match score and identifies missing keywords
-5. System generates job stability and career progression analysis
-6. System generates interview questions
-7. Results are displayed to user and stored in database
+Upload → text extract (PDF/DOC/OCR) → parallel LLM (match, stability, career) → save `evaluations` → UI + optional PDF.
 
-### 3.2 History Viewing Flow
+### Resume evaluation (batch)
 
-1. User accesses history page
-2. System retrieves all evaluations from database
-3. User selects an evaluation to view details
-4. System fetches complete evaluation data including interview questions
-5. Details are displayed in a modal interface
+Multiple files → compare → one `batch_group_id` → one row per resume (`evaluation_mode=batch`).
 
-## 4. External Integrations
+### Handbook
 
-1. **Google Gemini API**: For AI-powered text generation and analysis
-2. **Pinecone**: Vector database for semantic search capabilities
-3. **Document Processing Libraries**: For extracting text from various file formats
+JD (+ optional Oorwin ID) → stream or sync LLM → `recruiter_handbooks` → render + PDF.
 
-## 5. Security Considerations
+### History
 
-1. Input validation for all user-submitted data
-2. Secure storage of evaluation data
-3. Error handling to prevent information disclosure
-4. Rate limiting for API calls
+Job-centric grouping by `oorwin_job_id`; per-job evaluation list via API modal.
 
-## 6. Scalability Considerations
+## 4. External integrations
 
-1. **Horizontal Scaling**: The application can be scaled horizontally by deploying multiple instances behind a load balancer
-2. **Database Scaling**: As data grows, the SQLite database can be migrated to a more robust solution like PostgreSQL
-3. **Caching**: Implementation of caching mechanisms for frequently accessed data
-4. **Asynchronous Processing**: Long-running tasks are handled asynchronously to maintain responsiveness
+| System | Use |
+|--------|-----|
+| Google OAuth | Login |
+| Gemini / Groq / OpenAI | LLM |
+| Pinecone | HR policy vectors |
+| Oorwin | Job ID → JD |
+| VoxPro | Telephony logs/recordings (integration spec only) |
 
-## 7. Monitoring and Maintenance
+## 5. Security (summary)
 
-1. **Logging**: Comprehensive logging of application events and errors
-2. **Performance Monitoring**: Tracking of response times and resource utilization
-3. **Error Tracking**: Automated alerting for critical errors
-4. **Database Maintenance**: Regular backups and optimization
+- Session-based auth; team-scoped data via `get_accessible_user_emails()`
+- Secrets in `.env` only; `.gitignore` excludes DB and uploads
+- CSRF and rate limiting on selected endpoints — see PRODUCT_CONTEXT §12 for gaps
 
-## 8. Future Enhancements
+## 6. Further reading
 
-1. **Advanced Analytics**: Enhanced reporting and analytics for HR metrics
-2. **Integration with ATS**: Direct integration with Applicant Tracking Systems
-3. **Mobile Application**: Development of a mobile companion app
-4. **Multi-language Support**: Expansion to support multiple languages for global HR teams 
+- [../product/PRODUCT_CONTEXT.md](../product/PRODUCT_CONTEXT.md) — routes, schema, flows
+- [LLD.md](LLD.md) — table sketches (partial; may lag schema)
+- [../design/BRAND_COLOR_AUDIT.md](../design/BRAND_COLOR_AUDIT.md) — UI palette

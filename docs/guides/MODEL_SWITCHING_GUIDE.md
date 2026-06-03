@@ -1,15 +1,19 @@
-# 🤖 Model Switching Guide - Gemini ↔️ ChatGPT
+# Model switching guide (Gemini / OpenAI / Groq)
 
-This guide explains how to switch between Google Gemini and OpenAI ChatGPT models for resume evaluation in the HR Assistant Suite.
+> **Also see:** [ENV_AND_MODELS.md](ENV_AND_MODELS.md) and root `.env.example`.  
+> **Last reviewed:** May 2026
 
-## 📋 Overview
+This guide explains how to switch LLM providers for resume evaluation and related features in PLUTO.
 
-The application now supports **two AI providers** for resume evaluation:
+## Overview
 
-1. **Google Gemini** (Default) - Free tier available, fast, good quality
-2. **OpenAI ChatGPT** (Optional) - Paid service, potentially higher quality
+The application supports **three** global providers via `MODEL_PROVIDER`:
 
-You can easily switch between them using environment variables in your `.env` file.
+1. **Google Gemini** (default) — `gemini`
+2. **OpenAI** — `openai`
+3. **Groq** — `groq` (fast inference; reasoning models supported)
+
+Per-feature overrides exist (e.g. `EVALUATION_MODEL_PROVIDER`, `HANDBOOK_MODEL_PROVIDER`). Configure in `.env`.
 
 ---
 

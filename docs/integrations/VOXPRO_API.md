@@ -4,7 +4,7 @@
 
 **Purpose:** Document how to retrieve call logs from the PeopleLogic **VoxPro** telephony system and how to download the associated **WAV** call recordings. This is the source of truth for any Pluto integration that analyzes recruiter–candidate phone conversations.
 
-**Status:** API behavior and recording URLs were confirmed against live data (HTTP 200 on sample `.wav`). Pluto application code may or may not implement wrappers yet — always treat this file as the contract with VoxPro.
+**Status:** API behavior and recording URLs were confirmed against live data (HTTP 200 on sample `.wav`). **Pluto app integration is not implemented yet** — no `pluto/voxpro/` module or routes in production. This file is the contract for future work.
 
 ---
 

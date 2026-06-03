@@ -1,3 +1,7 @@
+# Document uploads (MatchMaker)
+
+> **Last reviewed:** May 2026 — matches `app.py` extractors and `requirements.txt`.
+
 ## Resume Evaluator: Supported Upload Formats
 
 The Resume Evaluator supports:

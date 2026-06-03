@@ -1,6 +1,7 @@
 # Product backlog (informal)
 
-Captured from legacy `backlogs.txt`:
+> **Not implemented** unless noted elsewhere in code — tracking ideas only.  
+> Captured from legacy `backlogs.txt` (May 2026):
 
 1. Remove candidate email ID & mobile number while processing resume (PII hygiene).
 2. Add **Download PDF** for resume evaluation (handbook PDF already exists).

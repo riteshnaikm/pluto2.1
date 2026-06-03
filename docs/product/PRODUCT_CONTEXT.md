@@ -2,7 +2,7 @@
 
 **Product Context Document** (handoff doc for AI assistants / new engineers)
 
-> Read this once before touching any code. It explains *what the product is*, *what's
+> **Last reviewed:** May 2026. Read this once before touching any code. It explains *what the product is*, *what's
 > inside the repo*, *how it's wired together*, and *where the known landmines are*.
 
 ---
@@ -37,7 +37,7 @@ Two supporting screens:
 
 | Layer | Tech |
 |---|---|
-| Web framework | **Flask** (single `app.py`, ~8,500 lines, 54 routes) |
+| Web framework | **Flask** (`app.py` ~8,200 lines; routes split across `pluto/blueprints/`) |
 | ASGI server | **Hypercorn** (Flask wrapped in `asgiref.wsgi.WsgiToAsgi`) — used so `async def` Flask routes work |
 | Auth | **Google OAuth** via `Authlib` — session-based (Flask `session`) |
 | Database | **SQLite** — single file `combined_db.db` at repo root |
@@ -82,7 +82,10 @@ pluto2-main/
 │
 ├── pluto/                       # Blueprints, routes, helpers
 ├── templates/                   # Jinja2 UI (extends base.html)
-├── static/                      # css/, js/, plbot*.png, peoplelogic-logo-300x77.png
+├── static/
+│   ├── css/                     # brand-tokens, bootstrap-overrides, copilot, history, batch-comparison, …
+│   ├── js/                      # resume-evaluator.js, handbook-stream.js, eval-stream.js, history.js, …
+│   └── images/                  # plbot.png, plbot_right_faced.png, peoplelogic-logo-300x77.png, peoplelogic.png (PDF)
 ├── HR_docs/                     # RAG policy PDFs
 ├── uploads/                     # Uploaded resumes
 ├── scripts/                     # Maintenance utilities
@@ -172,6 +175,8 @@ evaluations (
   over_under_qualification TEXT,
   time_taken REAL,                         -- end-to-end latency in seconds
   user_email TEXT,                         -- who ran the evaluation
+  evaluation_mode TEXT DEFAULT 'single', -- single | batch
+  batch_group_id TEXT,                     -- shared UUID for one multi-resume comparison run
   timestamp DATETIME
 )
 
@@ -237,6 +242,7 @@ GET  /api/evaluation-full/<int:eval_id>
 POST /api/generate_questions/<eval_id>
 
 POST /api/generate-recruiter-handbook
+POST /api/generate-recruiter-handbook-stream   handbook SSE (primary UI path)
 POST /api/generate-handbook-summary       short summary of a handbook
 POST /api/jd-quality-score                rates JD quality (gives suggestions)
 
@@ -340,13 +346,23 @@ falls back to canned defaults (`get_default_resume_evaluation`,
    regenerates via `/api/download-evaluation-pdf` (ReportLab).
 
 ### Recruiter Handbook
-1. User pastes JD or fetches via `GET /api/get-job-data/<oorwin_job_id>`.
+1. User pastes JD or fetches via `GET /api/get-job-data/<oorwin_job_id>` (shared intake form: `partials/handbook_intake_form.html`).
 2. Optional JD-quality score via `/api/jd-quality-score` (tiered: strong/ok/risk
    with suggestions).
-3. POST `/api/generate-recruiter-handbook` → LLM returns markdown handbook.
-4. Saved to `recruiter_handbooks`. Frontend renders via Marked.js + DOMPurify, adds
-   "copy" buttons to boolean search samples.
+3. POST `/api/generate-recruiter-handbook-stream` (SSE; `handbook-stream.js`) — or non-stream `/api/generate-recruiter-handbook`.
+4. Saved to `recruiter_handbooks`. Frontend renders via `pluto-handbook-result.js` + Marked.js + DOMPurify.
 5. PDF download via `/api/download-handbook-pdf` (async ReportLab).
+
+### MatchMaker batch (multi-resume)
+1. User uploads 2+ resumes on Co-Pilot → POST `/evaluate-batch`.
+2. Server compares candidates, returns ranked markdown + `evaluation_id` per file.
+3. Each resume saved with `evaluation_mode='batch'` and shared `batch_group_id`.
+4. UI: `batch-comparison.css` + `renderBatchComparison()` in `resume-evaluator.js`.
+
+### Job History
+1. GET `/history` — job-centric view (`history.html`, `history.js`).
+2. GET `/api/job-centric-history` — grouped by Oorwin job; batch vs single icons in UI.
+3. GET `/api/evaluations-by-job/<job_id>` — modal list per job.
 
 ### Info Buddy
 1. POST `/api/ask` with the user's question.
@@ -360,6 +376,7 @@ falls back to canned defaults (`get_default_resume_evaluation`,
 
 ## 10. UI conventions
 
+- **Brand system:** `static/css/brand-tokens.css` + `bootstrap-overrides.css` (see `docs/design/BRAND_COLOR_AUDIT.md`). Match-score colours: ≥70 olive, 40–69 yellow, &lt;40 orange.
 - **Colors** (CSS variables in both legacy hex and modern OKLCH):
   - `--primary-blue / --c-blue`   = `#0d6fae` / `oklch(55% 0.18 250)`
   - `--primary-green / --c-green` = `#7d8e2c` / `oklch(70% 0.18 140)`
@@ -387,7 +404,7 @@ falls back to canned defaults (`get_default_resume_evaluation`,
 | **Recruiter Handbook** | LLM-generated markdown briefing for a job. |
 | **MatchMaker** | Resume-vs-JD evaluator. |
 | **Oorwin** | The external ATS PeopleLogic uses; we fetch JDs by `oorwin_job_id`. |
-| **VoxPro** | Internal telephony (call logs + WAV recordings). API contract: `docs/integrations/VOXPRO_API.md`. |
+| **VoxPro** | Internal telephony (log_pull + WAV). Documented in `docs/integrations/VOXPRO_API.md`; **Pluto integration not implemented yet**. |
 | **QUICK_CHECKS** | Hard-coded list of 10 standard recruiter screening questions. |
 | **ACRONYM_MAP** | Expands HR acronyms (wfh, pto, posh, prep, etc.) before RAG retrieval. |
 | **PREP** | Performance Review & Enhancement Program — an HR policy. |
@@ -396,6 +413,7 @@ falls back to canned defaults (`get_default_resume_evaluation`,
 | **Teams** | `ITS`, `OSS`, `PCS`, `ISV`, `Core` — used for data scoping. |
 | **Roles** | `Admin`, `Business Manager`, `Anchors`, `Recruiter`. |
 | **handbook** / **evaluation** | The two unit-of-work types stored in DB. |
+| **batch_group_id** | Links multiple evaluations from one multi-resume run. |
 
 ---
 
@@ -403,23 +421,19 @@ falls back to canned defaults (`get_default_resume_evaluation`,
 
 These are factual observations from a code review — flag any change against them.
 
-1. **`app.py` is a 8,552-line / 396 KB monolith** with 54 routes and 112 functions.
-   Splitting into Flask blueprints + `services/` is the single highest-leverage refactor.
-2. **No `.gitignore`**. `combined_db.db`, `uploads/`, `venv/`, `__pycache__/`, `.env`
-   are all at risk of being committed. Never add plaintext key files (legacy `API_KEYS_SETUP.txt` was removed).
-   plaintext API keys — rotate and remove immediately.
+1. **`app.py` remains a large monolith** (~8k+ lines). Blueprints exist for pages/auth/API
+   but most logic is still in `app.py`. Further split into `services/` is high leverage.
+2. **`.gitignore` exists** — still verify `git status` before every commit; never commit `.env`, `combined_db.db`, or plaintext key files.
 3. **Default insecure secret**: `SECRET_KEY = "your-secret-key-change-in-production-12345"`
    if env var is missing. Production must set `FLASK_SECRET_KEY`.
-4. **No CSRF, no rate limiting, no security headers** (no Flask-WTF, no Talisman,
-   no Flask-Limiter). All POST endpoints accept JSON without origin/CSRF checks.
+4. **CSRF + rate limiting partially in place** (`pluto/extensions.py`: CSRFProtect, Flask-Limiter on hot endpoints). Not all POST routes may be equally protected — verify when adding APIs. Security headers via `pluto/security_headers.py` when enabled.
 5. **SQLite without WAL, without indexes, without a connection pool.** Every request
    does `sqlite3.connect(DATABASE_NAME)` (54 such calls). Will be a bottleneck at
    even moderate concurrency. Add `PRAGMA journal_mode=WAL`, `synchronous=NORMAL`,
    and indexes on `evaluations(user_email, timestamp, oorwin_job_id, match_percentage)`,
    `recruiter_handbooks(user_email, timestamp, oorwin_job_id)`, `users(team)`.
 6. **No migration framework**. Schema evolves via inline `PRAGMA table_info` + `ALTER
-   TABLE ... ADD COLUMN` branches in `init_db()`. The `migrate_database.py` file
-   exists but is unused. Adopt Alembic or at least version the migrations.
+   TABLE ... ADD COLUMN` in `init_db()`. Legacy `migrate_database.py` is archived under `docs/archive/`.
 7. **130 broad `except Exception:` handlers** — swallows errors and hides bugs.
    Most should narrow the exception class and re-raise after logging.
 8. **`print()` mixed with `logging`** (31 prints). Standardize on `logging`.
@@ -433,7 +447,7 @@ These are factual observations from a code review — flag any change against th
 12. **Stale duplicates** — largely cleaned up (2026); avoid re-adding backup templates or duplicate multi‑MB logos in `static/`.
 13. **CDN-served Bootstrap / Marked / DOMPurify / Chart.js** on every page —
     works but means the app is unusable offline and is subject to CDN availability.
-14. **`uploads/` is never cleaned** — resumes accumulate forever. Add a retention job.
+14. **`uploads/` cleanup** — optional scheduler via `UPLOAD_CLEANUP_INTERVAL_HOURS` (`pluto/scheduled_tasks.py`) or `scripts/cleanup_uploads.py`.
 15. **No CI / no tests**. Add at least smoke tests for the 4 critical endpoints
     (`/evaluate`, `/api/ask`, `/api/generate-recruiter-handbook`, `/api/analytics/overview`).
 16. **`requirements.txt` has no version pins** (only `langchain`, `flask`, etc.).

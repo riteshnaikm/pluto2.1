@@ -1,4 +1,7 @@
-# HR Assistant Suite - Low-Level Design (LLD)
+# PLUTO — Low-Level Design (LLD)
+
+> **Warning:** This file is a **partial / historical** schema sketch. The live schema is defined in `init_db()` inside `app.py` and summarized in **[../product/PRODUCT_CONTEXT.md](../product/PRODUCT_CONTEXT.md) §5**. Prefer that section when columns disagree.  
+> **Last reviewed:** May 2026
 
 ## 1. Database Schema
 
@@ -19,6 +22,13 @@ CREATE TABLE evaluations (
     technical_questions TEXT,
     nontechnical_questions TEXT,
     behavioral_questions TEXT,
+    oorwin_job_id TEXT,
+    candidate_fit_analysis TEXT,
+    over_under_qualification TEXT,
+    time_taken REAL,
+    user_email TEXT,
+    evaluation_mode TEXT DEFAULT 'single',  -- single | batch
+    batch_group_id TEXT,
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
 )
 ```

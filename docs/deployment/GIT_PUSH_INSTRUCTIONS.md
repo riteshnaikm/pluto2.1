@@ -22,7 +22,7 @@ These are excluded via `.gitignore` or should stay local:
 | `venv/`              | Local Python environment                 |
 | `combined_db.db`     | Local database                           |
 | `uploads/*`          | User-uploaded files                      |
-| `SERVER DETAILS.txt` | Server credentials (keep local only)   |
+| `docs/deployment/SERVER_DETAILS.md` | Must not contain real passwords in git |
 | `.claude/`           | Local IDE settings                       |
 
 Before every commit, run `git status` and confirm the files above are **not** listed.
@@ -88,7 +88,8 @@ git status
 Review the list. Remove anything sensitive that was staged by mistake:
 
 ```powershell
-git rm --cached "SERVER DETAILS.txt"
+# If any secret file was staged by mistake:
+# git rm --cached path/to/file
 ```
 
 For a file literally named `$null` (PowerShell accident), use **single quotes**:

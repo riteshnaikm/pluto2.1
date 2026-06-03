@@ -29,9 +29,15 @@ See [MODEL_SWITCHING_GUIDE.md](MODEL_SWITCHING_GUIDE.md) for full switching beha
 |----------|---------|---------|
 | `FAST_EVAL_MODE` | false | Faster eval path |
 | `EVALUATION_CACHE_ENABLED` | true | In-process eval cache |
+| `EVALUATION_MAX_COMPLETION_TOKENS` | 2048 | Cap eval LLM output |
+| `HANDBOOK_GROQ_REASONING_EFFORT` | medium | Groq handbook reasoning |
 | `MAX_UPLOAD_MB` | 10 | Upload size cap |
 | `ALLOWED_EMAIL_DOMAINS` | peoplelogic.in | OAuth domain allowlist |
+| `ENABLE_CSP` | false | Content-Security-Policy via `pluto/security_headers.py` |
 | `UPLOAD_CLEANUP_MAX_AGE_DAYS` | 7 | `scripts/cleanup_uploads.py` |
+| `UPLOAD_CLEANUP_INTERVAL_HOURS` | 0 | Background cleanup in `run.py` (0 = off) |
+| `GEMINI_MODEL` / `OPENAI_MODEL` / `GROQ_MODEL` | varies | Per-provider model IDs |
+| `VOXPRO_LOG_PULL_URL` | (optional) | VoxPro API — see [../integrations/VOXPRO_API.md](../integrations/VOXPRO_API.md) |
 
 ## Removed file
 

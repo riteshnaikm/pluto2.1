@@ -16,7 +16,7 @@ Open `http://127.0.0.1:5000` after Google OAuth is configured.
 
 ## Documentation
 
-**All docs:** [docs/README.md](docs/README.md)
+**All docs:** [docs/README.md](docs/README.md) (index, last reviewed May 2026)
 
 **Start here for development:** [docs/product/PRODUCT_CONTEXT.md](docs/product/PRODUCT_CONTEXT.md)
 

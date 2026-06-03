@@ -2,6 +2,14 @@
 
 All project documentation lives under `docs/`. Application code stays at the repo root (`app.py`, `pluto/`, `templates/`, `static/`).
 
+**Last doc review:** May 2026 (aligned with repo reorganisation, batch eval, brand tokens, Hypercorn deploy).
+
+| Doc type | Trust level |
+|----------|-------------|
+| [product/PRODUCT_CONTEXT.md](product/PRODUCT_CONTEXT.md) | **Highest** — routes, schema, landmines |
+| [architecture/HLD.md](architecture/HLD.md), [LLD.md](architecture/LLD.md) | Overview; LLD may lag `app.py` |
+| [archive/](archive/) | Historical — roadmap, old audits |
+
 ## Start here
 
 | Document | Audience |

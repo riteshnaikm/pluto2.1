@@ -19,7 +19,7 @@
 | Tokens | `static/css/brand-tokens.css` |
 | Bootstrap remap | `static/css/bootstrap-overrides.css` |
 | Global | `static/css/style.css`, `templates/base.html` |
-| Feature | `static/css/copilot.css`, `dashboard.css`, `hub.css`, `pluto-handbook-result.css`, `pluto-handbook-evolved.css`, `handbook-intake.css` |
+| Feature | `copilot.css`, `dashboard.css`, `hub.css`, `history.css`, `batch-comparison.css`, `pluto-handbook-result.css`, `pluto-handbook-evolved.css`, `handbook-intake.css` |
 | JS | `static/js/dashboard.js`, `static/js/resume-evaluator.js` |
 | Templates | `index1.html`, `index2.html`, `history.html`, `base.html` |
 | PDF | `app.py` (ReportLab / canvas) |
