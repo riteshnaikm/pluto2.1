@@ -83,19 +83,16 @@
             job_description: (form.querySelector('#handbook_job_description')?.value || '').trim(),
             sourcing_notes: (form.querySelector('#intake_sourcing_notes')?.value || '').trim(),
             additional_context: (form.querySelector('#handbook_additional_context')?.value || '').trim(),
-            am_name: (form.querySelector('#intake_am_name')?.value || '').trim(),
-            am_email: (form.querySelector('#intake_am_email')?.value || '').trim(),
-            am_phone: (form.querySelector('#intake_am_phone')?.value || '').trim(),
-            date_submitted: (form.querySelector('#intake_date_submitted')?.value || '').trim(),
-            target_start_date: (form.querySelector('#intake_target_start')?.value || '').trim(),
-            approved_by: (form.querySelector('#intake_approved_by')?.value || '').trim(),
         };
+
+        var transcriptPath = (form.querySelector('#selected_transcript_path')?.value || '').trim();
 
         return {
             job_title: intake.job_title,
             job_description: intake.job_description,
             additional_context: intake.additional_context,
             oorwin_job_id: reqId,
+            selected_transcript_path: transcriptPath,
             intake: intake,
         };
     }
@@ -113,10 +110,6 @@
         if (!i.must_have_skills || !i.must_have_skills.length) return { ok: false, message: 'Add at least one must-have skill.' };
         if (!i.job_description) return { ok: false, message: 'Job description is required.' };
         if (!i.interview_levels || !i.interview_levels.length) return { ok: false, message: 'Select interview levels.' };
-        if (!i.am_name) return { ok: false, message: 'AM name / SPOC is required.' };
-        if (!i.am_email) return { ok: false, message: 'AM email is required.' };
-        if (!i.am_phone) return { ok: false, message: 'AM phone is required.' };
-        if (!i.date_submitted) return { ok: false, message: 'Date submitted is required.' };
         return { ok: true };
     }
 
@@ -155,12 +148,6 @@
         set('intake_good_to_have', intake.good_to_have_skills);
         set('intake_interview_process', intake.interview_process);
         set('intake_sourcing_notes', intake.sourcing_notes);
-        set('intake_am_name', intake.am_name);
-        set('intake_am_email', intake.am_email);
-        set('intake_am_phone', intake.am_phone);
-        set('intake_date_submitted', intake.date_submitted);
-        set('intake_target_start', intake.target_start_date);
-        set('intake_approved_by', intake.approved_by);
         set('intake_shift_start', intake.shift_start);
         set('intake_shift_end', intake.shift_end);
 
@@ -189,6 +176,214 @@
         global.HandbookIntakeForm?.syncConditionalFields?.();
     }
 
+    function escapeHtml(text) {
+        return String(text || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function formatDuration(seconds) {
+        var n = Number(seconds);
+        if (!n || n <= 0) return '';
+        var mins = Math.floor(n / 60);
+        var secs = Math.round(n % 60);
+        return mins + 'm ' + secs + 's';
+    }
+
+    function initClientCallRecords(form) {
+        var selectEl = form.querySelector('#client-call-records');
+        var hintEl = form.querySelector('#client-call-records-hint');
+        var hiddenPath = form.querySelector('#selected_transcript_path');
+        var previewWrap = form.querySelector('#client-call-records-preview');
+        var previewMeta = form.querySelector('#client-call-preview-meta');
+        var previewText = form.querySelector('#client-call-preview-text');
+        var appendCheckbox = form.querySelector('#client-call-append-context');
+        var oorwinInput = form.querySelector('#handbook_oorwin_job_id');
+        var additionalContext = form.querySelector('#handbook_additional_context');
+        var fetchFn = global.apiFetch || global.plutoFetch;
+        var loadTimer = null;
+        var lastLoadedDetail = null;
+
+        if (!selectEl || !hintEl || !hiddenPath || !fetchFn) return;
+
+        function setHint(message) {
+            hintEl.textContent = message || '';
+        }
+
+        function clearPreview() {
+            lastLoadedDetail = null;
+            hiddenPath.value = '';
+            if (previewWrap) previewWrap.hidden = true;
+            if (previewMeta) previewMeta.textContent = '';
+            if (previewText) previewText.textContent = '';
+            if (appendCheckbox) appendCheckbox.checked = false;
+        }
+
+        function populateSelect(records, message, configured) {
+            var current = selectEl.value;
+            selectEl.innerHTML = '';
+            var defaultOpt = document.createElement('option');
+            defaultOpt.value = '';
+            defaultOpt.textContent = '— Select a call transcript (optional) —';
+            selectEl.appendChild(defaultOpt);
+
+            (records || []).forEach(function (rec) {
+                var opt = document.createElement('option');
+                opt.value = rec.object_path;
+                opt.textContent = rec.label || rec.basename || rec.object_path;
+                selectEl.appendChild(opt);
+            });
+
+            if (current) {
+                var found = false;
+                for (var i = 0; i < selectEl.options.length; i++) {
+                    if (selectEl.options[i].value === current) {
+                        selectEl.value = current;
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) clearPreview();
+            }
+
+            if (!configured) {
+                selectEl.disabled = true;
+                setHint(message || 'Call records unavailable (GCS not configured)');
+                return;
+            }
+
+            selectEl.disabled = false;
+            if (!records || !records.length) {
+                setHint(message || 'No call transcripts found yet');
+            } else {
+                setHint('Optional — link a client call recording from PeopleLogic Recorder.');
+            }
+        }
+
+        function buildRecordsUrl() {
+            var params = new URLSearchParams({ limit: '100' });
+            var jobId = (oorwinInput?.value || '').trim();
+            if (jobId) params.set('job_id', jobId);
+            return '/api/client-call-records?' + params.toString();
+        }
+
+        async function loadClientCallRecords() {
+            setHint('Loading call transcripts…');
+            try {
+                var response = await fetchFn(buildRecordsUrl());
+                var data = await response.json();
+                if (!response.ok) {
+                    populateSelect([], data.message || 'Unable to load call transcripts', false);
+                    return;
+                }
+                populateSelect(data.records || [], data.message, data.configured !== false);
+            } catch (err) {
+                console.warn('client call records load failed', err);
+                populateSelect([], 'Unable to load call transcripts', false);
+            }
+        }
+
+        function scheduleReload() {
+            if (loadTimer) clearTimeout(loadTimer);
+            loadTimer = setTimeout(loadClientCallRecords, 400);
+        }
+
+        function maybeAppendTranscript(detail) {
+            if (!appendCheckbox?.checked || !additionalContext || !detail) return;
+            var transcript = (detail.transcript || '').trim();
+            if (!transcript) return;
+            var block =
+                '--- Client call transcript (' +
+                (detail.recordingFilename || 'recording') +
+                ') ---\n' +
+                transcript;
+            var existing = (additionalContext.value || '').trim();
+            if (existing && existing.indexOf(transcript.slice(0, 80)) >= 0) return;
+            if (existing) {
+                var ok = global.confirm(
+                    'Additional Context already has text. Append the full transcript anyway?'
+                );
+                if (!ok) return;
+                additionalContext.value = existing + '\n\n' + block;
+            } else {
+                additionalContext.value = block;
+            }
+        }
+
+        async function onRecordSelected() {
+            var path = selectEl.value;
+            hiddenPath.value = path;
+            if (!path) {
+                clearPreview();
+                return;
+            }
+
+            setHint('Loading transcript preview…');
+            try {
+                var response = await fetchFn(
+                    '/api/client-call-records/detail?path=' + encodeURIComponent(path)
+                );
+                var data = await response.json();
+                if (!response.ok || !data.success) {
+                    setHint(data.error || 'Unable to load transcript');
+                    clearPreview();
+                    return;
+                }
+
+                var detail = data.transcript || {};
+                lastLoadedDetail = detail;
+                var ctx = detail.recordingContext || {};
+                var meta = detail.metadata || {};
+                var client =
+                    ctx.clientName || ctx.client || meta.client || ctx.jobCode || detail.jobId || '';
+                var contact = ctx.contactName || ctx.clientManager || meta.contact || '';
+                var roleTitle = ctx.jobTitle || ctx.roleTitle || meta['job-title'] || '';
+                var recordedAt = detail.recordedAt || '';
+                var duration = formatDuration(detail.durationSeconds);
+
+                if (previewMeta) {
+                    previewMeta.innerHTML =
+                        '<strong>' +
+                        escapeHtml(client || 'Client call') +
+                        '</strong>' +
+                        (contact ? ' · ' + escapeHtml(contact) : '') +
+                        (roleTitle ? ' · ' + escapeHtml(roleTitle) : '') +
+                        (recordedAt ? '<br><span class="text-secondary">' + escapeHtml(recordedAt) : '') +
+                        (duration ? ' · ' + escapeHtml(duration) : '') +
+                        (recordedAt ? '</span>' : '');
+                }
+                if (previewText) {
+                    var preview = (detail.transcript || '').slice(0, 500);
+                    previewText.textContent = preview + (detail.transcript && detail.transcript.length > 500 ? '…' : '');
+                }
+                if (previewWrap) previewWrap.hidden = false;
+                setHint('Transcript linked for handbook generation.');
+                maybeAppendTranscript(detail);
+            } catch (err) {
+                console.warn('transcript detail failed', err);
+                setHint('Unable to load transcript');
+                clearPreview();
+            }
+        }
+
+        selectEl.addEventListener('change', onRecordSelected);
+        if (appendCheckbox) {
+            appendCheckbox.addEventListener('change', function () {
+                if (appendCheckbox.checked && lastLoadedDetail) {
+                    maybeAppendTranscript(lastLoadedDetail);
+                }
+            });
+        }
+        if (oorwinInput) {
+            oorwinInput.addEventListener('input', scheduleReload);
+            oorwinInput.addEventListener('change', scheduleReload);
+        }
+
+        loadClientCallRecords();
+    }
+
     function initHandbookIntakeForm() {
         var form = document.getElementById('handbookGenerationForm');
         if (!form) return;
@@ -202,11 +397,6 @@
             addBtn.addEventListener('click', function () {
                 addSkillRow(tbody, '', '', '');
             });
-        }
-
-        var dateEl = form.querySelector('#intake_date_submitted');
-        if (dateEl && !dateEl.value) {
-            dateEl.value = new Date().toISOString().slice(0, 10);
         }
 
         function syncConditionalFields() {
@@ -229,6 +419,7 @@
             el.addEventListener('change', syncConditionalFields);
         });
         syncConditionalFields();
+        initClientCallRecords(form);
 
         global.HandbookIntakeForm = {
             collectHandbookIntakePayload: collectHandbookIntakePayload,
@@ -241,10 +432,12 @@
                     tbody.innerHTML = '';
                     addSkillRow(tbody, '', '', '');
                 }
-                var dateEl = form.querySelector('#intake_date_submitted');
-                if (dateEl) {
-                    dateEl.value = new Date().toISOString().slice(0, 10);
-                }
+                var callSelect = form.querySelector('#client-call-records');
+                var hiddenPath = form.querySelector('#selected_transcript_path');
+                var previewWrap = form.querySelector('#client-call-records-preview');
+                if (callSelect) callSelect.value = '';
+                if (hiddenPath) hiddenPath.value = '';
+                if (previewWrap) previewWrap.hidden = true;
                 syncConditionalFields();
             },
         };

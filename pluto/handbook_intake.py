@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from pluto.gcs_transcripts import format_transcript_for_prompt
+
 INTAKE_SCHEMA_VERSION = 1
 
 
@@ -121,14 +123,6 @@ def validate_intake(intake: dict) -> list[str]:
         errors.append("Job description is required")
     if not intake.get("interview_levels"):
         errors.append("Select interview levels")
-    if not intake.get("am_name"):
-        errors.append("AM name / SPOC is required")
-    if not intake.get("am_email"):
-        errors.append("AM email is required")
-    if not intake.get("am_phone"):
-        errors.append("AM phone is required")
-    if not intake.get("date_submitted"):
-        errors.append("Date submitted is required")
     return errors
 
 
@@ -277,12 +271,6 @@ def format_intake_for_prompt(intake: dict) -> str:
         "",
         "### Sourcing notes (mandate)",
         intake.get("sourcing_notes") or "None specified",
-        "",
-        "### Sign-off",
-        f"- **AM / SPOC:** {intake.get('am_name')} | {intake.get('am_email')} | {intake.get('am_phone')}",
-        f"- **Date submitted:** {intake.get('date_submitted')}",
-        f"- **Target start:** {intake.get('target_start_date') or 'Not specified'}",
-        f"- **Approved by:** {intake.get('approved_by') or 'Not specified'}",
     ]
 
     if intake.get("additional_context"):
@@ -301,6 +289,7 @@ def build_recruiter_handbook_prompt(
     job_description: str,
     additional_context: str = "",
     intake: dict | None = None,
+    client_call_transcript: dict | None = None,
 ) -> str:
     """Canonical recruiter-handbook prompt (intake-aware, expanded sections)."""
     intake_block = ""
@@ -313,9 +302,15 @@ def build_recruiter_handbook_prompt(
 
     intake_section = f"\n\n---\n\n{intake_block}\n\n---\n\n" if intake_block else ""
 
-    return f"""You are an expert recruitment specialist creating a Recruiter Playbook & Handbook from an AM intake handoff and job description. Use EVERY field in the intake block — budget, location, notice period, interview plan, sourcing notes, skills matrix, urgency, and SPOC details must shape screening, sourcing, Boolean strings, red flags, and the sales pitch. Do not invent constraints that contradict the intake.
+    transcript_block = ""
+    if client_call_transcript:
+        transcript_block = (
+            f"\n\n---\n\n{format_transcript_for_prompt(client_call_transcript)}\n\n---\n\n"
+        )
 
-{intake_section}
+    return f"""You are an expert recruitment specialist creating a Recruiter Playbook & Handbook from an AM intake handoff and job description. Use EVERY field in the intake block — budget, location, notice period, interview plan, sourcing notes, skills matrix, and urgency must shape screening, sourcing, Boolean strings, red flags, and the sales pitch. Do not invent constraints that contradict the intake.
+
+{intake_section}{transcript_block}
 
 **Job Description (full text):**
 {job_description}
@@ -342,7 +337,7 @@ def build_recruiter_handbook_prompt(
 
    **4. Primary Sourcing Parameters (Must-Have)** — GFM table: | # | Skill / Experience | Recruiter Cue | Why It Matters | — 6–10 rows from must-have skills table + JD.
 
-   **5. Screening Framework** — Sections A–H (Role logistics, Comp/notice, Must-have skills, Domain, Behavioral, Process fit, Client-specific from sourcing notes, Sign-off probes) with 1–3 bullet questions each.
+   **5. Screening Framework** — Sections A–G (Role logistics, Comp/notice, Must-have skills, Domain, Behavioral, Process fit, Client-specific from sourcing notes) with 1–3 bullet questions each.
 
    **6. Interview & Assessment Plan** — mirror intake interview levels, assessments, and process narrative; stage-by-stage what recruiter should prep candidate for.
 
@@ -359,15 +354,15 @@ def build_recruiter_handbook_prompt(
 
    **9. Red Flags to Watch** — 5–8 bullets including intake/JD conflicts, over-budget, notice mismatch, travel/location mismatch.
 
-   **10. Recruiter Checklist (Pre-call)** — 5–7 bullets tied to urgency and sign-off fields.
+   **10. Recruiter Checklist (Pre-call)** — 5–7 bullets tied to urgency and intake priorities.
 
    **11. Recruiter Sales Pitch (to candidates)** — ✨ **Why this role?** then 5–7 bullets using comp band, work mode, and growth hooks; closing tagline.
 
    **12. Overqualification / Flight Risk Assessment** — experience vs band, title gap, comp, notice; when to proceed; 2–3 screening questions.
 
-   **13. Hiring Timeline & Priority Playbook** — map hiring urgency to weekly sourcing cadence, stakeholder touchpoints, AM SPOC ({intake.get('am_name') if intake else 'SPOC'} if known).
+   **13. Hiring Timeline & Priority Playbook** — map hiring urgency to weekly sourcing cadence and stakeholder touchpoints.
 
-   End with ✅ one line: handbook is intake-aligned; verify live req status with AM before outreach.
+   End with ✅ one line: handbook is intake-aligned; verify live req status before outreach.
 
 **Style:** Professional, concise, actionable. Markdown only; no outer code fences. Prefer intake over JD when they conflict.
 

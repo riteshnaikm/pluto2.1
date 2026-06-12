@@ -1,0 +1,36 @@
+---
+description: Capture product ideas in BACKLOG.md; log shipped work in RELEASES.md; do not implement unless asked
+alwaysApply: true
+---
+
+# Product backlog & releases (PLUTO)
+
+## New ideas from the user
+
+When the user shares a **feature idea**, improvement, or “what if we …” **without** asking to implement now:
+
+1. Add or update an item in **`docs/product/BACKLOG.md`** (use next ID in the right section: CA-, RE-, PL-, or new prefix).
+2. Set status **Idea** (or **Ready** if they gave clear acceptance criteria).
+3. Set priority if they indicated urgency; otherwise **P2** or ask once.
+4. **Do not** start implementation, refactors, or large doc rewrites for that idea unless they say implement / build / this sprint / pick up CA-x.
+
+If they say **“add to backlog”**, only update BACKLOG (and briefly confirm what was recorded).
+
+## When shipping work
+
+In the **same task** as a user-visible feature (or when they say “log release”):
+
+1. Add a dated section to **`docs/product/RELEASES.md`** (Added / Changed / Fixed / Removed).
+2. Update **`docs/product/PRODUCT_CONTEXT.md`** if routes, flows, or schema changed.
+3. Mark related backlog IDs **Done** in BACKLOG (with link to RELEASES date).
+
+## PM guidance
+
+For questions about sprints, changelog practice, or what to maintain: point to **`docs/product/PRODUCT_OPS.md`**.
+
+## Trust order (product docs)
+
+1. `PRODUCT_CONTEXT.md` — current behaviour  
+2. `RELEASES.md` — historical shipped/removed  
+3. `BACKLOG.md` — future / not committed  
+4. `docs/archive/*` — do not add new backlog items there

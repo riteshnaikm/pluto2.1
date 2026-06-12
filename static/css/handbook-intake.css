@@ -52,6 +52,38 @@
     gap: 0.65rem 1.25rem;
 }
 
+.client-call-preview {
+    margin-top: 0.75rem;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--cp-border, rgba(13, 111, 174, 0.15));
+    background: var(--cp-surface-muted, rgba(13, 111, 174, 0.04));
+    font-size: 0.88rem;
+}
+
+.client-call-preview__meta {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--cp-fg, var(--pl-text-primary));
+}
+
+.client-call-preview__text {
+    margin: 0 0 0.65rem;
+    white-space: pre-wrap;
+    color: var(--cp-fg-muted, var(--text-secondary, #5a6a7a));
+    max-height: 8rem;
+    overflow-y: auto;
+}
+
+.client-call-preview__opt {
+    margin: 0;
+}
+
+select.pl-input:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
 .intake-check {
     display: inline-flex;
     align-items: center;
@@ -90,6 +122,10 @@
 
 .intake-num--olive {
     background: var(--pl-olive, #7d8e2c);
+}
+
+.intake-num--orange {
+    background: var(--pl-orange, #e26014);
 }
 
 /* MatchMaker file drop zone */

@@ -56,6 +56,10 @@
     background: linear-gradient(135deg, var(--primary-orange), var(--pl-orange-dark));
 }
 
+.pluto-hub__card--amber .pluto-hub__card-bg {
+    background: linear-gradient(135deg, #f5a623, var(--primary-orange));
+}
+
 .pluto-hub__card-bg {
     position: absolute;
     inset: 0;

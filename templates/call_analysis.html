@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Call Analysis — PLUTO{% endblock %}
+
+{% block content_wrapper_class %}{% endblock %}
+
+{% block content %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/copilot.css') }}?v={{ asset_v }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/handbook-intake.css') }}?v={{ asset_v }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/call-analysis.css') }}?v={{ asset_v }}">
+
+<div class="copilot-page call-analysis-page">
+    <div class="copilot-layout">
+        <aside class="copilot-modules" aria-label="Module switcher">
+            <a href="{{ url_for('resume_evaluator') }}?section=handbook" class="copilot-nav-card handbook-theme">
+                <div class="card-bg"></div>
+                <div class="copilot-nav-card-inner">
+                    <i class="bi bi-book"></i>
+                    <h3>Recruiter Handbook</h3>
+                </div>
+            </a>
+            <a href="{{ url_for('resume_evaluator') }}?section=matchmaker" class="copilot-nav-card matchmaker-theme">
+                <div class="card-bg"></div>
+                <div class="copilot-nav-card-inner">
+                    <i class="bi bi-person-check"></i>
+                    <h3>MatchMaker</h3>
+                </div>
+            </a>
+            <a href="{{ url_for('call_analysis') }}" class="copilot-nav-card calls-theme active" aria-current="page">
+                <div class="card-bg"></div>
+                <div class="copilot-nav-card-inner">
+                    <i class="bi bi-telephone-outbound"></i>
+                    <h3>Call Analysis</h3>
+                </div>
+            </a>
+            <a href="{{ url_for('history') }}" class="copilot-nav-card history-theme">
+                <div class="card-bg"></div>
+                <div class="copilot-nav-card-inner">
+                    <i class="bi bi-clock-history"></i>
+                    <h3>Job History</h3>
+                </div>
+            </a>
+            <nav class="copilot-quick-links" aria-label="More tools">
+                <a href="{{ url_for('index') }}">Hub</a> ·
+                <a href="{{ url_for('hr_assistant') }}">Info Buddy</a> ·
+                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+            </nav>
+        </aside>
+
+        <div class="copilot-main main-content-area">
+            <div class="copilot-hero-row">
+                <div class="copilot-context" aria-live="polite">
+                    <strong>VoxPro call analysis (beta).</strong>
+                    Enter a candidate mobile number to pull VoxPro recordings, transcribe conversations, and generate an AI recruiter report.
+                    Only calls with <strong>duration &gt; 5 seconds</strong> are downloaded and analyzed.
+                </div>
+                <aside class="copilot-mascot" aria-hidden="true">
+                    <img src="{{ url_for('static', filename='plbot.png') }}" alt="">
+                </aside>
+            </div>
+
+            <div class="px-4 pb-4">
+                <div class="copilot-form-card call-analysis-intake mb-3">
+                    <h1 class="form-title-pl h4 mb-1">
+                        <i class="bi bi-telephone-outbound" style="color: var(--pl-orange);" aria-hidden="true"></i>
+                        Call Analysis
+                    </h1>
+                    <p class="text-muted small mb-4">
+                        Test module — separate from MatchMaker. Requires network access to VoxPro and Groq API keys.
+                    </p>
+
+                    <form id="callAnalysisForm" class="handbook-intake-form" novalidate>
+                        <fieldset class="intake-section">
+                            <legend class="intake-section-title">
+                                <span class="intake-num intake-num--orange">1</span> Candidate phone
+                            </legend>
+                            <div class="pl-form-group mb-0">
+                                <label class="pl-label" for="call_analysis_phone">Mobile number <span class="required-star">*</span></label>
+                                <input type="tel" class="pl-input" id="call_analysis_phone" name="phone" required
+                                       placeholder="10-digit number e.g. 9599015158" inputmode="numeric" autocomplete="tel"
+                                       value="{{ request.args.get('phone', '') }}">
+                                <span class="pl-hint">Fetches all VoxPro logs for this number, then uses only connected calls longer than 5 seconds (incoming and outgoing).</span>
+                            </div>
+                        </fieldset>
+
+                        <fieldset class="intake-section">
+                            <legend class="intake-section-title">
+                                <span class="intake-num intake-num--olive">2</span> Optional context
+                            </legend>
+                            <div class="pl-form-group mb-0">
+                                <label class="pl-label" for="call_analysis_job_id">Req / Oorwin Job ID</label>
+                                <input type="text" class="pl-input" id="call_analysis_job_id" name="oorwin_job_id"
+                                       placeholder="Links JD/handbook context to the analysis"
+                                       value="{{ request.args.get('job_id', '') }}">
+                            </div>
+                        </fieldset>
+
+                        <button type="submit" class="btn-pl orange btn-pl--block mt-3" id="callAnalysisSubmitBtn">
+                            <i class="bi bi-play-circle" aria-hidden="true"></i> Start call analysis
+                        </button>
+                    </form>
+
+                    <div id="call-analysis-status" class="call-analysis-status" style="display: none;" aria-live="polite">
+                        <p class="call-analysis-status-title mb-1">
+                            <span class="spinner-border spinner-border-sm text-warning" role="status" aria-hidden="true"></span>
+                            <span id="call-analysis-status-text">Working…</span>
+                        </p>
+                        <ul class="call-analysis-steps" id="call-analysis-steps">
+                            <li data-step="fetch">Fetching VoxPro call logs</li>
+                            <li data-step="download">Downloading recordings</li>
+                            <li data-step="merge">Merging audio / transcribing</li>
+                            <li data-step="analyze">Generating AI analysis</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div id="call-analysis-empty" class="call-analysis-empty text-center py-5 text-muted">
+                    <i class="bi bi-telephone display-4 d-block mb-3 opacity-50" aria-hidden="true"></i>
+                    <p class="mb-0">Enter a phone number and start analysis to see results here.</p>
+                </div>
+
+                <div id="call-analysis-results" class="call-analysis-results copilot-form-card" style="display: none;" aria-live="polite">
+                    <div class="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-3">
+                        <h2 class="h5 mb-0">Analysis report</h2>
+                        <span class="badge rounded-pill text-bg-warning" id="call-analysis-meta-badge"></span>
+                    </div>
+                    <div id="call-analysis-calls-timeline" class="call-analysis-timeline mb-3"></div>
+                    <div id="call-analysis-report" class="call-analysis-report recruiter-handbook-content"></div>
+                    <details class="mt-3">
+                        <summary class="small text-muted">Full transcript</summary>
+                        <pre id="call-analysis-transcript" class="call-analysis-transcript small mt-2"></pre>
+                    </details>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/call-analysis-page.js') }}?v={{ asset_v }}" defer></script>
+{% endblock %}

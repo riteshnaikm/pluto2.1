@@ -1399,6 +1399,13 @@ def init_db():
     except Exception as e:
         print(f"Note: Schema update check for handbooks intake_json: {e}")
     
+    try:
+        from pluto.voxpro.db import init_voxpro_tables
+
+        init_voxpro_tables(cursor)
+    except Exception as e:
+        print(f"Note: VoxPro table init: {e}")
+
     ensure_indexes(cursor)
 
     # Initialize default admin user (override via DEFAULT_ADMIN_EMAIL in .env)
@@ -4729,9 +4736,15 @@ def generate_recruiter_handbook():
     """API endpoint to generate a comprehensive recruiter handbook"""
     try:
         data = request.get_json()
-        intake, errors, job_title, job_description, additional_context, oorwin_job_id = (
-            _parse_handbook_generation_request(data)
-        )
+        (
+            intake,
+            errors,
+            job_title,
+            job_description,
+            additional_context,
+            oorwin_job_id,
+            client_call_transcript,
+        ) = _parse_handbook_generation_request(data)
 
         if errors:
             return jsonify({
@@ -4802,6 +4815,7 @@ def generate_recruiter_handbook():
             job_description=job_description,
             additional_context=additional_context,
             intake=intake,
+            client_call_transcript=client_call_transcript,
         )
 
         # Generate handbook using handbook-specific provider/model override
@@ -4925,9 +4939,15 @@ def generate_recruiter_handbook_stream():
     """
     try:
         data = request.get_json() or {}
-        intake, errors, job_title, job_description, additional_context, oorwin_job_id = (
-            _parse_handbook_generation_request(data)
-        )
+        (
+            intake,
+            errors,
+            job_title,
+            job_description,
+            additional_context,
+            oorwin_job_id,
+            client_call_transcript,
+        ) = _parse_handbook_generation_request(data)
 
         if errors:
             return jsonify({'success': False, 'message': errors[0]}), 400
@@ -4936,6 +4956,7 @@ def generate_recruiter_handbook_stream():
             job_description=job_description,
             additional_context=additional_context,
             intake=intake,
+            client_call_transcript=client_call_transcript,
         )
 
         # Capture session info BEFORE entering the generator (Flask session is
@@ -5125,19 +5146,50 @@ def _parse_handbook_generation_request(data):
     oorwin_job_id = (data.get("oorwin_job_id") or intake.get("req_id") or "").strip()
     if oorwin_job_id:
         intake["req_id"] = oorwin_job_id
-    return intake, errors, job_title, job_description, additional_context, oorwin_job_id
+
+    client_call_transcript = None
+    selected_transcript_path = (data.get("selected_transcript_path") or "").strip()
+    if selected_transcript_path:
+        try:
+            from pluto.gcs_transcripts import (
+                gcs_configured,
+                get_transcript_by_path,
+                validate_transcript_path,
+            )
+
+            if gcs_configured() and validate_transcript_path(selected_transcript_path):
+                client_call_transcript = get_transcript_by_path(selected_transcript_path)
+                intake["selected_transcript_path"] = selected_transcript_path
+        except Exception as exc:
+            logging.warning(
+                "Could not load client call transcript %s: %s",
+                selected_transcript_path,
+                exc,
+            )
+
+    return (
+        intake,
+        errors,
+        job_title,
+        job_description,
+        additional_context,
+        oorwin_job_id,
+        client_call_transcript,
+    )
 
 
 def _build_recruiter_handbook_prompt(
     job_description: str,
     additional_context: str = "",
     intake: dict | None = None,
+    client_call_transcript: dict | None = None,
 ) -> str:
     """Backward-compatible wrapper — see pluto.handbook_intake."""
     return build_recruiter_handbook_prompt(
         job_description=job_description,
         additional_context=additional_context,
         intake=intake,
+        client_call_transcript=client_call_transcript,
     )
 
 

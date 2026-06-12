@@ -4,7 +4,7 @@
 
 **Purpose:** Document how to retrieve call logs from the PeopleLogic **VoxPro** telephony system and how to download the associated **WAV** call recordings. This is the source of truth for any Pluto integration that analyzes recruiter–candidate phone conversations.
 
-**Status:** API behavior and recording URLs were confirmed against live data (HTTP 200 on sample `.wav`). **Pluto app integration is not implemented yet** — no `pluto/voxpro/` module or routes in production. This file is the contract for future work.
+**Status:** API behavior and recording URLs confirmed on live data. **Pluto integration implemented** in `pluto/voxpro/` with HTTP routes under `/api/voxpro/calls/*`. This file remains the external API contract; pipeline details below.
 
 ---
 
@@ -16,6 +16,18 @@
 | Host | `office.peoplelogic.in` |
 | Use in Pluto | Fetch all calls for a candidate phone number → download recordings → transcribe → merge → AI call analysis (see product discussions; implementation lives under `pluto/voxpro/` when added) |
 | Network | Pluto (or any client) must run on a network that can reach `http://office.peoplelogic.in` (VPN/LAN). No HTTPS in current deployment. |
+
+### Troubleshooting: HTTP 404 with “Access Denied”
+
+If `log_pull` returns **404** and the body is HTML `<b>Access Denied</b>` (Apache), the URL is correct but your **client IP is blocked**. This is not a Pluto bug.
+
+| Check | Action |
+|-------|--------|
+| VPN / office LAN | Connect to PeopleLogic VPN or run Pluto on a server inside the office network |
+| Smoke test | `python scripts/test_voxpro_flow.py 9599015158 --days 30` — expect HTTP 200 and a JSON array |
+| Wrong symptom | True “not found” would differ; live failures observed are **Access Denied** on all path variants |
+
+Pluto maps this to a clear API error (`503`) for the Call Analysis UI.
 
 ---
 
@@ -114,7 +126,7 @@ calls = resp.json()  # list of dicts
 | `dst` | Destination: customer number (outgoing) or extension (incoming) |
 | `dest_type` | e.g. `"Extension"`, `"Time_condition"`, or `""` |
 | `did` | DID for incoming routing; often empty on outgoing |
-| `dur` | Duration in **seconds** as string; **`""` (empty) if NOT CONNECTED** |
+| `dur` | Duration in **seconds** as string (e.g. `"161"`, `"0"`). **`""` (empty) = no connected talk time → treat as no recording for Pluto** (see §2.1) |
 | `callmethod` | `"OUTGOING"` or `"INCOMING"` |
 | `rec_fname` | Recording base name **without** `.wav` extension |
 | `rec_location` | Folder path under the office host (e.g. `MUSIC/2026/01/08`) |
@@ -135,6 +147,31 @@ Examples:
 - Incoming: `2026-01-08_15:46:33_9599015158`
 
 URL construction is the same in all cases (see §3).
+
+### 2.1 `dur` — fetch vs analyze
+
+**VoxPro API:** `log_pull` returns **all** call rows for the phone in the date range. There is **no server-side filter** on `dur`. Pluto filters locally after the response.
+
+**Pluto rule (default `VOXPRO_MIN_DUR_SECONDS=5`):**
+
+| `dur` | Pluto behaviour |
+|-------|-----------------|
+| `""` (empty) | Skip — no connected talk time |
+| `"0"` … `"5"` | Stored in DB for audit; **not** downloaded, transcribed, or shown in Call Analysis UI |
+| `">5"` (e.g. `"8"`, `"161"`) | Download WAV, merge/STT, LLM analysis, show in UI |
+
+```python
+# pluto/voxpro/client.py — duration strictly greater than 5 seconds
+dur_meets_minimum(dur)  # alias: dur_has_recording(dur)
+```
+
+**Caveats (still verify with HTTP):**
+
+1. **Retention** — Old rows can have `dur` set but the `.wav` file returns **404** (file deleted, log kept). Always handle failed downloads.
+2. **Rare edge case** — Some `NOT CONNECTED` rows have `dur=""` but a WAV file still exists on disk. Pluto skips those for candidate analysis.
+3. **Tune threshold** — Set `VOXPRO_MIN_DUR_SECONDS` in `.env` if product wants a different cutoff.
+
+Call Analysis UI copy: *“Showing calls with duration > 5 seconds only.”*
 
 ---
 
@@ -195,26 +232,43 @@ with open("call_2741533.wav", "wb") as f:
 
 | Condition | Guidance |
 |-----------|----------|
-| `status` is `"NOT CONNECTED"` | `dur` is usually `""`; recording may exist but often skip for transcription |
+| `dur` is `""` | **Skip** — no recording to analyze (primary gate) |
+| `dur` is numeric but HTTP **404** | Log row only; file purged — skip |
 | `rec_fname` or `rec_location` empty | Do not build URL |
 | HTTP non-200 on `.wav` | Log and skip that call; do not fail entire batch |
 | Very large date ranges | `log_pull` may return many rows — chunk by month or cap lookback (e.g. 90 days) |
 
 ---
 
-## 4. Recommended workflow for Pluto (multi-call merge)
+## 4. Pluto pipeline (implemented)
 
-For a single candidate phone number:
+For a single candidate phone number, `pluto.voxpro.pipeline.run_call_analysis()`:
 
-1. **Normalize phone** — digits only; use **10-digit** form for the API (e.g. `9599015158`).
-2. **log_pull** with `from`, `to`, and `phone` (omit `status` if the UI needs missed calls too).
-3. **Sort** results by `datetime` ascending.
-4. **Dedupe** in database on `slno`.
-5. **Download** `.wav` for each `CONNECTED` call with valid `rec_fname` / `rec_location`.
-6. **Transcribe** each file; **merge** transcripts with headers (datetime, `email_id`, `callmethod`, `dur`).
-7. **Analyze** merged text with the LLM; optionally link to `evaluations` / `recruiter_handbooks` via `oorwin_job_id`.
+1. **Normalize phone** — 10-digit form for `log_pull`.
+2. **log_pull** + upsert `voxpro_calls` (dedupe on `slno`).
+3. **Download** WAVs where `dur > VOXPRO_MIN_DUR_SECONDS` (default 5) → `uploads/calls/{slno}.wav`.
+4. **Merge audio** (primary) — pydub + **ffmpeg** → `merged_{phone}_{batch}.wav`; skip if over size/duration caps.
+5. **Speech-to-text** — Groq Whisper primary; Gemini fallback; per-call STT if merge/STT fails.
+6. **LLM analysis** — `generate_content_unified()` → JSON + markdown in `candidate_call_analyses`.
 
-Multiple recordings for the same `phone` are expected (callbacks, different agents, incoming vs outgoing). Treat them as one timeline, not separate candidates.
+### HTTP routes (login required)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| POST | `/api/voxpro/calls/fetch` | Ingest logs; optional download only |
+| POST | `/api/voxpro/calls/analyze` | Full pipeline (rate limit 3/min) |
+| GET | `/api/voxpro/calls?phone=` | Cached calls + latest analysis |
+
+### System dependencies
+
+- Python: `pydub` (see `requirements.txt`)
+- OS: **ffmpeg** on PATH (`sudo apt install ffmpeg` on Linux)
+
+### Smoke test
+
+```bash
+python scripts/test_voxpro_flow.py 9599015158 --download 2
+```
 
 ---
 
@@ -228,15 +282,9 @@ Multiple recordings for the same `phone` are expected (callbacks, different agen
 
 ---
 
-## 6. Environment variables (Pluto integration)
+## 6. Environment variables (Pluto)
 
-When implemented in code, prefer configuration over hardcoding:
-
-```env
-VOXPRO_LOG_PULL_URL=http://office.peoplelogic.in/Voxpro/api/log_pull
-VOXPRO_OFFICE_BASE=http://office.peoplelogic.in
-VOXPRO_LOOKBACK_DAYS=90
-```
+See `.env.example` and [../guides/ENV_AND_MODELS.md](../guides/ENV_AND_MODELS.md).
 
 ---
 
@@ -244,10 +292,14 @@ VOXPRO_LOOKBACK_DAYS=90
 
 | Path | Role |
 |------|------|
-| `docs/integrations/VOXPRO_API.md` | This document — API contract |
-| `docs/product/PRODUCT_CONTEXT.md` | Overall Pluto product map |
-| `pluto/voxpro/` | (When added) Python client, ingest, analysis |
-| `app.py` / `pluto/blueprints/pluto_api.py` | (When added) HTTP routes for fetch/analyze |
+| `docs/integrations/VOXPRO_API.md` | This document |
+| `pluto/voxpro/` | Client, ingest, merge, transcribe, analyze, pipeline |
+| `pluto/routes/voxpro_views.py` | Flask handlers |
+| `pluto/blueprints/pluto_api.py` | Route registration |
+| `templates/call_analysis.html` | Dedicated beta page (`/call-analysis`) |
+| `static/js/call-analysis-page.js` | Call Analysis page UI |
+| `static/js/voxpro-calls.js` | Legacy inline UI (unused; kept for reference) |
+| `scripts/test_voxpro_flow.py` | Log pull + download smoke test |
 
 If this document and the code disagree, **verify against VoxPro live behavior** and update this file.
 

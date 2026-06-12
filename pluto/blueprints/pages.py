@@ -28,6 +28,11 @@ def register_page_routes(app):
     def dashboard():
         return render_template("dashboard.html")
 
+    @bp.route("/call-analysis", endpoint="call_analysis")
+    @login_required
+    def call_analysis():
+        return render_template("call_analysis.html")
+
     app.register_blueprint(bp)
 
     # Backward-compatible endpoint aliases (avoid template churn)
@@ -46,4 +51,9 @@ def register_page_routes(app):
         "/dashboard",
         endpoint="dashboard",
         view_func=app.view_functions["pages.dashboard"],
+    )
+    app.add_url_rule(
+        "/call-analysis",
+        endpoint="call_analysis",
+        view_func=app.view_functions["pages.call_analysis"],
     )

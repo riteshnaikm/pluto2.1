@@ -20,6 +20,8 @@ After any change that affects behaviour, routes, schema, env vars, deploy, integ
 | Brand / CSS / match-score colours | `docs/design/BRAND_COLOR_AUDIT.md` |
 | Architecture shift | `docs/architecture/HLD.md` (+ LLD if schema changes) |
 | Product flows, routes, DB columns | `docs/product/PRODUCT_CONTEXT.md`, often `PRODUCT_DETAILS.md` |
+| User-visible feature shipped or removed | `docs/product/RELEASES.md` (same task) |
+| New idea / “later” request (no implement now) | `docs/product/BACKLOG.md` only — see `product-backlog.mdc` |
 | Repo layout / folder moves | `docs/README.md`, root `README.md`, `PRODUCT_CONTEXT.md` §3 |
 
 **Do not edit `docs/archive/`** unless intentionally archiving historical material.

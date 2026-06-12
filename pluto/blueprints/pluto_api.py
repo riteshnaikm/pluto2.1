@@ -9,6 +9,8 @@ to avoid circular imports.
 from flask import Blueprint
 
 from pluto.routes import feedback_views as fv
+from pluto.routes import gcs_transcript_views as gtx
+from pluto.routes import voxpro_views as vx
 
 
 def register_pluto_api_blueprint() -> None:
@@ -64,6 +66,8 @@ def register_pluto_api_blueprint() -> None:
         ("/api/jd-quality-score", m.jd_quality_score, ("POST",)),
         ("/api/get-job-ids", m.get_job_ids, ("GET",)),
         ("/api/get-job-data/<job_id>", m.get_job_data, ("GET",)),
+        ("/api/client-call-records", gtx.client_call_records_list, ("GET",)),
+        ("/api/client-call-records/detail", gtx.client_call_records_detail, ("GET",)),
         ("/api/get-handbooks", m.get_handbooks, ("GET",)),
         ("/api/analytics/overview", m.get_analytics_overview, ("GET",)),
         ("/api/analytics/export-csv", m.export_analytics_csv, ("GET",)),
@@ -115,6 +119,9 @@ def register_pluto_api_blueprint() -> None:
             ("POST",),
         ),
         ("/evaluate-batch", m.evaluate_batch, ("POST",)),
+        ("/api/voxpro/calls/fetch", vx.voxpro_calls_fetch, ("POST",)),
+        ("/api/voxpro/calls/analyze", vx.voxpro_calls_analyze, ("POST",)),
+        ("/api/voxpro/calls", vx.voxpro_calls_list, ("GET",)),
     ]
 
     for rule, view, methods in registrations:

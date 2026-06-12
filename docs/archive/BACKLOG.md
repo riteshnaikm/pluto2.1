@@ -1,7 +1,8 @@
-# Product backlog (informal)
+# Product backlog (archived)
 
-> **Not implemented** unless noted elsewhere in code — tracking ideas only.  
-> Captured from legacy `backlogs.txt` (May 2026):
+> **Superseded by [../product/BACKLOG.md](../product/BACKLOG.md)** — use the active file for all new ideas.
+
+Historical capture from legacy `backlogs.txt` (May 2026):
 
 1. Remove candidate email ID & mobile number while processing resume (PII hygiene).
 2. Add **Download PDF** for resume evaluation (handbook PDF already exists).

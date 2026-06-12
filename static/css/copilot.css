@@ -135,6 +135,10 @@
         background: linear-gradient(135deg, var(--c-green), var(--pl-olive-dark));
     }
 
+    .copilot-page .copilot-nav-card.calls-theme .card-bg {
+        background: linear-gradient(135deg, var(--c-orange), var(--pl-primary-dark));
+    }
+
     .copilot-page .copilot-nav-card.history-theme .card-bg {
         background: linear-gradient(135deg, var(--c-yellow), var(--c-orange));
     }

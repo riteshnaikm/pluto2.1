@@ -33,6 +33,9 @@ When code, APIs, or behaviour change:
 |----------|----------|
 | [product/PRODUCT_CONTEXT.md](product/PRODUCT_CONTEXT.md) | **Primary handoff** — product map, architecture, routes, landmines |
 | [product/PRODUCT_DETAILS.md](product/PRODUCT_DETAILS.md) | Feature-level product reference |
+| [product/BACKLOG.md](product/BACKLOG.md) | **Product backlog** — ideas & priorities (not auto-implemented) |
+| [product/RELEASES.md](product/RELEASES.md) | **Release history** — shipped / removed by date |
+| [product/PRODUCT_OPS.md](product/PRODUCT_OPS.md) | PM playbook — sprints, backlog vs changelog |
 | [.env.example](../.env.example) | Environment variables (secrets never in git) |
 
 ## Directory map
@@ -40,7 +43,7 @@ When code, APIs, or behaviour change:
 ```
 docs/
 ├── README.md                 ← this file
-├── product/                  Product & handoff
+├── product/                  Product & handoff (BACKLOG, RELEASES, PRODUCT_OPS)
 ├── architecture/             HLD / LLD
 ├── integrations/             External APIs (VoxPro, etc.)
 ├── design/                   Brand / UI audits
@@ -64,7 +67,10 @@ docs/
 | Upload behaviour | [guides/DOCUMENT_UPLOADS.md](guides/DOCUMENT_UPLOADS.md) |
 | High-level design | [architecture/HLD.md](architecture/HLD.md) |
 | Low-level design | [architecture/LLD.md](architecture/LLD.md) |
-| Backlog ideas | [archive/BACKLOG.md](archive/BACKLOG.md) |
+| Product backlog (active) | [product/BACKLOG.md](product/BACKLOG.md) |
+| Release history | [product/RELEASES.md](product/RELEASES.md) |
+| PM practices | [product/PRODUCT_OPS.md](product/PRODUCT_OPS.md) |
+| Backlog (legacy) | [archive/BACKLOG.md](archive/BACKLOG.md) |
 | v2 roadmap (historical) | [archive/PLUTO_V2_ROADMAP.md](archive/PLUTO_V2_ROADMAP.md) |
 
 ## Runtime folders (not documentation)

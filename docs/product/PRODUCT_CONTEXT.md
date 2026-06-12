@@ -192,6 +192,15 @@ qa_history       ( id, question, retrieved_docs (JSON), final_answer, feedback, 
 qa_feedback      ( id, question_id FK→qa_history, rating 1-5, feedback, timestamp UNIQUE(question_id) )
 feedback         ( id, evaluation_id FK, rating, comments, timestamp UNIQUE(evaluation_id) )
 handbook_feedback( id, handbook_id FK→recruiter_handbooks, rating 1-5 CHECK, comments, timestamp )
+
+voxpro_calls ( slno PK, phone_normalized, datetime, email_id, src, dst, dur, callmethod,
+  rec_fname, rec_location, status, recording_url, local_path, download_status, raw_json, ingested_at )
+
+call_transcripts ( id, slno FK, phone_normalized, transcript_text, engine, created_at )
+
+candidate_call_analyses ( id, phone_normalized, oorwin_job_id, evaluation_id, handbook_id,
+  call_count, merged_transcript, merged_wav_path, stt_method, analysis_json, analysis_markdown,
+  time_taken, user_email, created_at, updated_at )
 ```
 
 **Field conventions**: anything ending in `_questions`, `match_factors`, `job_stability`,
@@ -214,6 +223,7 @@ GET  /hr-assistant                       Info Buddy page
 GET  /resume-evaluator                   Recruiter Co-Pilot (?section=handbook|matchmaker)
 GET  /evaluation/<int:eval_id>           single evaluation viewer
 GET  /history                            history table
+GET  /call-analysis                      VoxPro call analysis (beta test page)
 GET  /feedback_history                   feedback log
 GET  /dashboard                          analytics
 ```
@@ -248,6 +258,8 @@ POST /api/jd-quality-score                rates JD quality (gives suggestions)
 
 GET  /api/get-job-ids                     autocomplete from Oorwin
 GET  /api/get-job-data/<job_id>           pull JD by Oorwin ID
+GET  /api/client-call-records             GCS transcript index (PeopleLogic Recorder)
+GET  /api/client-call-records/detail      full transcript JSON by `path`
 GET  /api/get-handbooks
 GET  /api/handbook/<int:handbook_id>
 GET  /api/handbooks-only
@@ -258,6 +270,10 @@ GET  /api/evaluations-by-job/<job_id>
 
 POST /api/download-evaluation-pdf         ReportLab
 POST /api/download-handbook-pdf           ReportLab (async)
+
+POST /api/voxpro/calls/fetch              VoxPro log ingest + optional WAV download
+POST /api/voxpro/calls/analyze             Full call pipeline (STT + LLM analysis)
+GET  /api/voxpro/calls?phone=              Cached calls + latest analysis
 ```
 
 ### Feedback APIs
@@ -347,11 +363,12 @@ falls back to canned defaults (`get_default_resume_evaluation`,
 
 ### Recruiter Handbook
 1. User pastes JD or fetches via `GET /api/get-job-data/<oorwin_job_id>` (shared intake form: `partials/handbook_intake_form.html`).
-2. Optional JD-quality score via `/api/jd-quality-score` (tiered: strong/ok/risk
+2. Optional **Client call Records** dropdown — `GET /api/client-call-records` lists PeopleLogic Recorder transcripts from GCS; selected `path` is sent as `selected_transcript_path` on generate and injected into the LLM prompt.
+3. Optional JD-quality score via `/api/jd-quality-score` (tiered: strong/ok/risk
    with suggestions).
-3. POST `/api/generate-recruiter-handbook-stream` (SSE; `handbook-stream.js`) — or non-stream `/api/generate-recruiter-handbook`.
-4. Saved to `recruiter_handbooks`. Frontend renders via `pluto-handbook-result.js` + Marked.js + DOMPurify.
-5. PDF download via `/api/download-handbook-pdf` (async ReportLab).
+4. POST `/api/generate-recruiter-handbook-stream` (SSE; `handbook-stream.js`) — or non-stream `/api/generate-recruiter-handbook`.
+5. Saved to `recruiter_handbooks`. Frontend renders via `pluto-handbook-result.js` + Marked.js + DOMPurify.
+6. PDF download via `/api/download-handbook-pdf` (async ReportLab).
 
 ### MatchMaker batch (multi-resume)
 1. User uploads 2+ resumes on Co-Pilot → POST `/evaluate-batch`.
@@ -363,6 +380,11 @@ falls back to canned defaults (`get_default_resume_evaluation`,
 1. GET `/history` — job-centric view (`history.html`, `history.js`).
 2. GET `/api/job-centric-history` — grouped by Oorwin job; batch vs single icons in UI.
 3. GET `/api/evaluations-by-job/<job_id>` — modal list per job.
+
+### VoxPro call analysis (beta)
+1. Open **Call Analysis** at `/call-analysis` (hub + Co-Pilot sidebar; same auth as other pages).
+2. Enter candidate phone → POST `/api/voxpro/calls/analyze` — fetch logs, download WAVs (`dur` numeric), merge audio (or per-call STT fallback), transcribe, LLM report.
+3. Results on-page via `static/js/call-analysis-page.js`; persisted in `candidate_call_analyses`. MatchMaker links here (inline VoxPro UI removed until merge into eval/history).
 
 ### Info Buddy
 1. POST `/api/ask` with the user's question.
@@ -404,7 +426,7 @@ falls back to canned defaults (`get_default_resume_evaluation`,
 | **Recruiter Handbook** | LLM-generated markdown briefing for a job. |
 | **MatchMaker** | Resume-vs-JD evaluator. |
 | **Oorwin** | The external ATS PeopleLogic uses; we fetch JDs by `oorwin_job_id`. |
-| **VoxPro** | Internal telephony (log_pull + WAV). Documented in `docs/integrations/VOXPRO_API.md`; **Pluto integration not implemented yet**. |
+| **VoxPro** | Internal telephony — `pluto/voxpro/`, `docs/integrations/VOXPRO_API.md`. |
 | **QUICK_CHECKS** | Hard-coded list of 10 standard recruiter screening questions. |
 | **ACRONYM_MAP** | Expands HR acronyms (wfh, pto, posh, prep, etc.) before RAG retrieval. |
 | **PREP** | Performance Review & Enhancement Program — an HR policy. |

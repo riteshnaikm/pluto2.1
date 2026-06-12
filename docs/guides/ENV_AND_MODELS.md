@@ -37,7 +37,24 @@ See [MODEL_SWITCHING_GUIDE.md](MODEL_SWITCHING_GUIDE.md) for full switching beha
 | `UPLOAD_CLEANUP_MAX_AGE_DAYS` | 7 | `scripts/cleanup_uploads.py` |
 | `UPLOAD_CLEANUP_INTERVAL_HOURS` | 0 | Background cleanup in `run.py` (0 = off) |
 | `GEMINI_MODEL` / `OPENAI_MODEL` / `GROQ_MODEL` | varies | Per-provider model IDs |
-| `VOXPRO_LOG_PULL_URL` | (optional) | VoxPro API — see [../integrations/VOXPRO_API.md](../integrations/VOXPRO_API.md) |
+| `VOXPRO_OFFICE_BASE` | `http://office.peoplelogic.in` | Recording URL base |
+| `VOXPRO_LOG_PULL_URL` | `{base}/Voxpro/api/log_pull` | Call log API |
+| `VOXPRO_LOOKBACK_DAYS` | 365 | Default date window |
+| `VOXPRO_MIN_DUR_SECONDS` | 5 | Only download/analyze/show calls with `dur` **greater than** this (seconds) |
+| `VOXPRO_STT_MAX_TOTAL_DUR_SECONDS` | 0 | Cap log-duration sum per STT run (newest calls first); `0` = no cap |
+| `CALL_TRANSCRIPTION_PROVIDER` | groq | `groq`, `gemini`, or `auto` |
+| `CALL_TRANSCRIPTION_GROQ_MODEL` | whisper-large-v3-turbo | Groq Whisper model |
+| `CALL_ANALYSIS_MODEL_PROVIDER` | groq | LLM for call analysis |
+| `CALL_ANALYSIS_GROQ_MODEL` | llama-3.3-70b-versatile | Avoid `gpt-oss-*` on long transcripts (TPM / empty output) |
+| `CALL_ANALYSIS_MAX_TRANSCRIPT_CHARS` | 12000 | Truncate transcript before LLM (Groq TPM ~8k) |
+| `CALL_ANALYSIS_MAX_COMPLETION_TOKENS` | 2048 | Max completion tokens for call analysis |
+| `GOOGLE_APPLICATION_CREDENTIALS` | — | Path to GCS service-account JSON (read-only on `peoplelogic-pl-recordings`) |
+| `GCS_BUCKET` | `peoplelogic-pl-recordings` | Bucket for PeopleLogic Recorder transcripts |
+| `GCS_PREFIX` | `pl-recorder` | Object prefix under bucket (`pl-recorder/{folderId}/transcripts/*.json`) |
+| `CALL_MERGE_MAX_BYTES` | 24000000 | Skip audio merge above this |
+| `CALL_MERGE_MAX_DURATION_SEC` | 5400 | Skip audio merge above ~90 min |
+
+Requires **ffmpeg** on the server for audio merge. See [../integrations/VOXPRO_API.md](../integrations/VOXPRO_API.md).
 
 ## Removed file
 

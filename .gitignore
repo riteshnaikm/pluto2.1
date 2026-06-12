@@ -20,6 +20,8 @@ templates/index copy.html
 API_KEYS_SETUP.txt
 SERVER DETAILS.txt
 .claude/
+*-sa.json
+gen-lang-client-*.json
 
 # Duplicate assets (keep canonical files in static/)
 /static/logo.png

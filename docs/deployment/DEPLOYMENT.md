@@ -17,6 +17,14 @@ sudo apt install -y python3.10 python3.10-venv python3.10-dev git nginx
 
 Optional for uploads: **Tesseract** (OCR), **LibreOffice** (legacy `.doc`) — see [../guides/DOCUMENT_UPLOADS.md](../guides/DOCUMENT_UPLOADS.md).
 
+For **VoxPro call analysis** (audio merge + STT):
+
+```bash
+sudo apt install -y ffmpeg
+```
+
+Pluto must reach `http://office.peoplelogic.in` on the company network.
+
 ---
 
 ## Get the code

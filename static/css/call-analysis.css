@@ -1,0 +1,112 @@
+/* Dedicated Call Analysis page (VoxPro beta) */
+
+.copilot-page .copilot-nav-card.calls-theme .card-bg {
+    background: linear-gradient(135deg, var(--pl-orange), var(--pl-primary-dark));
+}
+
+.copilot-page .btn-pl.orange {
+    background: var(--pl-orange);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md, 8px);
+}
+
+.copilot-page .btn-pl.orange:hover:not(:disabled) {
+    filter: brightness(1.05);
+}
+
+.copilot-page .btn-pl.orange:disabled {
+    opacity: 0.65;
+}
+
+.call-analysis-status {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md, 8px);
+    background: color-mix(in srgb, var(--pl-orange) 8%, var(--pl-surface));
+    border: 1px solid color-mix(in srgb, var(--pl-orange) 25%, transparent);
+}
+
+.call-analysis-status-title {
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.call-analysis-steps {
+    list-style: none;
+    padding: 0;
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+}
+
+.call-analysis-steps li {
+    padding: 0.35rem 0 0.35rem 1.5rem;
+    position: relative;
+    color: var(--pl-text-secondary);
+}
+
+.call-analysis-steps li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.65rem;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--pl-border);
+}
+
+.call-analysis-steps li.is-active {
+    color: var(--pl-text-primary);
+    font-weight: 600;
+}
+
+.call-analysis-steps li.is-active::before {
+    background: var(--pl-orange);
+}
+
+.call-analysis-steps li.is-done {
+    color: var(--pl-olive);
+}
+
+.call-analysis-steps li.is-done::before {
+    background: var(--pl-olive);
+}
+
+.call-analysis-results {
+    border-top: 4px solid var(--pl-orange);
+}
+
+.call-analysis-timeline {
+    font-size: 0.875rem;
+}
+
+.call-analysis-timeline table {
+    width: 100%;
+}
+
+.call-analysis-timeline th {
+    font-weight: 600;
+    color: var(--pl-text-secondary);
+}
+
+.call-analysis-transcript {
+    max-height: 320px;
+    overflow: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    background: var(--pl-surface);
+    border: 1px solid var(--pl-border);
+    border-radius: var(--radius-md, 8px);
+    padding: 1rem;
+}
+
+.call-analysis-report h1,
+.call-analysis-report h2,
+.call-analysis-report h3 {
+    color: var(--pl-text-primary);
+}

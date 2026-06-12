@@ -21,6 +21,22 @@
                     <label class="intake-check"><input type="radio" name="intake_priority" value="low"> Low</label>
                 </div>
             </div>
+            <div class="col-12 pl-form-group">
+                <label class="pl-label" for="client-call-records">Client call Records</label>
+                <select class="pl-input" id="client-call-records" name="client_call_record" disabled>
+                    <option value="">— Select a call transcript (optional) —</option>
+                </select>
+                <input type="hidden" id="selected_transcript_path" name="selected_transcript_path" value="">
+                <span class="pl-hint" id="client-call-records-hint">Loading call transcripts…</span>
+                <div id="client-call-records-preview" class="client-call-preview" hidden aria-live="polite">
+                    <div class="client-call-preview__meta" id="client-call-preview-meta"></div>
+                    <p class="client-call-preview__text" id="client-call-preview-text"></p>
+                    <label class="intake-check client-call-preview__opt">
+                        <input type="checkbox" id="client-call-append-context">
+                        Append full transcript to Additional Context
+                    </label>
+                </div>
+            </div>
         </div>
     </fieldset>
 
@@ -211,36 +227,6 @@
             <label class="pl-label" for="handbook_additional_context">Additional Context</label>
             <textarea class="pl-textarea pl-textarea--ctx" id="handbook_additional_context" name="additional_context" rows="2"
                       placeholder="Team structure, client culture, other constraints…"></textarea>
-        </div>
-    </fieldset>
-
-    <fieldset class="intake-section">
-        <legend class="intake-section-title"><span class="intake-num">6</span> Sign-off &amp; SPOC</legend>
-        <div class="row g-3">
-            <div class="col-md-6 pl-form-group">
-                <label class="pl-label" for="intake_am_name">AM Name / SPOC <span class="required-star">*</span></label>
-                <input type="text" class="pl-input" id="intake_am_name" name="am_name" required>
-            </div>
-            <div class="col-md-6 pl-form-group">
-                <label class="pl-label" for="intake_am_email">Email <span class="required-star">*</span></label>
-                <input type="email" class="pl-input" id="intake_am_email" name="am_email" required>
-            </div>
-            <div class="col-md-6 pl-form-group">
-                <label class="pl-label" for="intake_am_phone">Phone <span class="required-star">*</span></label>
-                <input type="tel" class="pl-input" id="intake_am_phone" name="am_phone" required>
-            </div>
-            <div class="col-md-6 pl-form-group">
-                <label class="pl-label" for="intake_date_submitted">Date Submitted <span class="required-star">*</span></label>
-                <input type="date" class="pl-input" id="intake_date_submitted" name="date_submitted" required>
-            </div>
-            <div class="col-md-6 pl-form-group">
-                <label class="pl-label" for="intake_target_start">Target Start Date</label>
-                <input type="date" class="pl-input" id="intake_target_start" name="target_start_date">
-            </div>
-            <div class="col-md-6 pl-form-group">
-                <label class="pl-label" for="intake_approved_by">Approved By (Manager)</label>
-                <input type="text" class="pl-input" id="intake_approved_by" name="approved_by">
-            </div>
         </div>
     </fieldset>
 
